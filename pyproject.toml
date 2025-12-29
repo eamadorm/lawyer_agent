@@ -12,7 +12,7 @@ local_dev = [
     "requests>=2.32.5",
     "pre-commit>=4.5.1",
 ]
-backend_services = [
+agent = [
     "google-cloud-bigquery>=3.31.0",
     "google-cloud-storage>=3.1.0",
     "google-cloud-modelarmor>=0.3.0",
@@ -23,4 +23,13 @@ backend_services = [
     "pydantic-settings>=2.11.0",
     "uvicorn>=0.37.0",
     "datetime>=6.0",
+]
+dof_pipeline = [
+    "bs4>=0.0.2",
+    "requests>=2.32.5",
+    "pydantic-settings>=2.7.0",
+    "google-cloud-bigquery>=3.13.0",
+    "loguru>=0.7.2",
+    "fastapi>=0.118.0",
+    "uvicorn>=0.37.0",
 ]
