@@ -6,12 +6,10 @@ import urllib3
 
 import requests
 from bs4 import BeautifulSoup
+from .config import settings
 
 # Disable SSL warnings when importing the module
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-BASE_URL_HOST = "https://www.dof.gob.mx"
-BASE_URL = "https://www.dof.gob.mx/index.php"
 
 def get_dof_news_by_date(date_obj: datetime.date) -> List[Dict]:
     """
@@ -31,7 +29,7 @@ def get_dof_news_by_date(date_obj: datetime.date) -> List[Dict]:
         }
         
         # 30-second timeout for robustness
-        response = requests.get(BASE_URL, params=params, verify=False, timeout=30)
+        response = requests.get(settings.DOF_BASE_URL, params=params, verify=False, timeout=30)
         response.raise_for_status()
         
         if "No hay datos para la fecha seleccionada" in response.text:
@@ -59,7 +57,7 @@ def get_dof_news_by_date(date_obj: datetime.date) -> List[Dict]:
                     
                 href = el.get('href', '')
                 if href and not href.startswith('http'):
-                    link_final = f"{BASE_URL_HOST}/{href}" if href.startswith('nota_detalle') else f"{BASE_URL_HOST}{href}"
+                    link_final = f"{settings.DOF_BASE_HOST}/{href}" if href.startswith('nota_detalle') else f"{settings.DOF_BASE_HOST}{href}"
                 else:
                     link_final = href
 
