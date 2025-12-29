@@ -1,6 +1,6 @@
 
 run-agent:
-	uv run -m agent.main
+	uv run --group agent -m agent.main
 
 run-dof-api:
-	uv run -m pipelines.dof.main
+	uv run --group dof_pipeline -m pipelines.dof.main
