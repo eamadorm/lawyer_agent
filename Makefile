@@ -18,7 +18,16 @@ deploy-dof-pipeline:
 	--source=pipelines/dof \
 	--entry-point=scrape_dof_function \
 	--trigger-http \
-	--allow-unauthenticated \
 	--set-env-vars=PROJECT_ID=$(PROJECT_ID) \
+	--no-allow-unauthenticated \
 	--service-account=dof-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com
 	rm pipelines/dof/requirements.txt
+
+schedule-dof-pipeline:
+	gcloud scheduler jobs create http dof-scrapper-job \
+	--location=$(DOF_PIPELINE_REGION) \
+	--schedule="0 8 * * *" \
+	--time-zone="America/Mexico_City" \
+	--http-method=GET \
+	--uri=https://us-central1-learned-stone-454021-c8.cloudfunctions.net/dof-scraper-function \
+	--oidc-service-account-email=dof-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com
