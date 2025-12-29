@@ -1,6 +1,7 @@
 
 PROJECT_ID=learned-stone-454021-c8
 REGION=us
+DOF_PIPELINE_REGION=us-central1
 
 run-agent:
 	uv run --group agent -m agent.main
@@ -13,11 +14,11 @@ deploy-dof-pipeline:
 	gcloud functions deploy dof-scraper-function \
 	--gen2 \
 	--runtime=python312 \
-	--region=$(REGION) \
+	--region=$(DOF_PIPELINE_REGION) \
 	--source=pipelines/dof \
 	--entry-point=scrape_dof_function \
 	--trigger-http \
 	--allow-unauthenticated \
 	--set-env-vars=PROJECT_ID=$(PROJECT_ID) \
-	--service-account="dof-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com"
+	--service-account=dof-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com
 	rm pipelines/dof/requirements.txt

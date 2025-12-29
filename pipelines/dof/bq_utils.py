@@ -82,6 +82,9 @@ def insert_rows_from_json(
     write_disposition: Literal[
         "WRITE_APPEND", "WRITE_TRUNCATE", "WRITE_EMPTY"
     ] = "WRITE_APPEND",
+    create_disposition: Literal[
+        "CREATE_IF_NEEDED", "CREATE_NEVER"
+    ] = "CREATE_NEVER",
 ) -> None:
     """
     Insert rows into a table in BigQuery. This function does not pass it through the streaming buffer, allowing ease of update, and deletion.
@@ -122,6 +125,7 @@ def insert_rows_from_json(
 
     job_config = bigquery.LoadJobConfig(
         write_disposition=write_disposition,
+        create_disposition=create_disposition,
     )
 
     try:
