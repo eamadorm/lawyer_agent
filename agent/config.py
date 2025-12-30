@@ -53,7 +53,7 @@ class AgentConfig(BaseSettings):
     MODEL_TEMPERATURE: Annotated[
         float,
         Field(
-            default=0.5,
+            default=0.2,
             description="Controls randomness in model output: lower values make responses more focused, higher values more creative.",
             ge=0,
             le=1,
