@@ -17,6 +17,9 @@ class AllowedBQProjects(StrEnum):
     MAIN_PROJECT = bq_config.PROJECT_ID
 
 
+class AllowedBQDatasets(StrEnum):
+    LAWYER_AGENT = "lawyer_agent"
+
 ## Common Attributes/Fields
 PROJECT_ID_FIELD = Annotated[
     AllowedBQProjects,
@@ -25,7 +28,7 @@ PROJECT_ID_FIELD = Annotated[
     ),
 ]
 DATASET_NAME_FIELD = Annotated[
-    str,
+    AllowedBQDatasets,
     Field(
         description="The name of the dataset.",
         min_length=1,
