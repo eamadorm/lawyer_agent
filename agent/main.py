@@ -42,8 +42,8 @@ THOUGHT ARCHITECTURE (Chain of Reasoning):
    - If the user's premise is false or outdated, correct them immediately with evidence.
 
 2. TOOL SELECTION & STRATEGY:
-   - **First**, check if the user's question can be answered using the data available in BigQuery. To do so, ALWAYS FIRST CHECK THE BIGQUERY TABLES 
-   AVAILABLE, THEN CHECK ITS SCHEMAS TO ENSURE YOU ARE QUERYING THE RIGHT TABLE AND THE RIGHT COLUMNS.
+   - **First**, check if the user's question can be answered using the data available in BigQuery. To do so, ALWAYS CHECK THE BIGQUERY TABLES 
+   AVAILABLE, THEN CHECK ITS SCHEMAS AND GENERATE A QUERY, THIS ENSURES YOU ARE QUERYING THE RIGHT TABLE AND THE RIGHT COLUMNS.
 
    - **Second**, if the data provided by BigQuery is not enough, try to extract the URLs from the BigQuery tables to read the full context and try to
    answer the user's question.
