@@ -98,9 +98,37 @@
     color: white;
     text-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     letter-spacing: 0.15em;
+
     /* Added spacing to mimic dots presence */
 }
 
+.login-subtitle {
+    font-size: 1.25rem;
+    /* Reduced from 1.5rem */
+    font-family: 'Montserrat', sans-serif;
+    /* Match title */
+    font-style: italic;
+    /* Match title */
+    font-weight: 600;
+    /* Semi-bold */
+    letter-spacing: 0.05em;
+    color: #e2e8f0;
+
+    border: none;
+    background: transparent;
+    padding: 0;
+
+    margin-top: -8rem;
+    /* Tighter negative margin for mobile details */
+    margin-left: 0;
+    /* Align perfectly with title */
+    text-transform: uppercase;
+
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 25;
+    /* Ensure visibility */
+}
 
 @media (min-width: 768px) {
 
@@ -145,7 +173,9 @@
 
     .login-subtitle {
         font-size: 1.4vw;
-        margin-top: -4.5vw;
+        margin-top: -9vw;
+        /* Extremely tight margin to be just below title */
+        text-transform: uppercase;
     }
 
     .login-card {
