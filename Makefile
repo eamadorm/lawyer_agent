@@ -47,6 +47,7 @@ deploy-dof-pipeline:
 	--source=pipelines/dof \
 	--entry-point=scrape_dof_function \
 	--trigger-http \
+	--timeout=3600s \
 	--set-env-vars=PROJECT_ID=$(PROJECT_ID) \
 	--no-allow-unauthenticated \
 	--service-account=dof-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com
