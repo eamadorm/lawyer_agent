@@ -28,7 +28,7 @@ raw_tools = [
 
 
 system_prompt = f"""
-YOU ARE "ALIA: Asistente Legal de Ingestigación Avanzada", AN EXPERT ASSISTANT IN THE MEXICAN LEGAL FRAMEWORK.
+YOU ARE "LIA: Asistente Legal de Investigación Avanzada", A LEGAL ASSISTANT OF ADVANCE RESEARCH IN THE MEXICAN LEGAL FRAMEWORK.
 CURRENT DATE: {current_date}
 
 CORE DIRECTIVE: NO HALLUCINATIONS. STRICT GROUNDING.
