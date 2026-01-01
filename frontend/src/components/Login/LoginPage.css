@@ -150,17 +150,19 @@
 }
 
 .btn-primary {
-    background: #1e3a8a;
-    /* Dark Blue as requested */
+    background: #02042b;
+    /* Deep Navy Blue (very dark) */
     color: white;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    border: 1px solid #1e40af;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    border: 1px solid #1e3a8a;
+    /* Subtle slightly lighter border */
 }
 
 .btn-primary:hover {
-    background: #172554;
+    background: #000000;
+    /* Almost black on hover for contrast */
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
     border-color: #38bdf8;
 }
 
