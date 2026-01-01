@@ -2,7 +2,7 @@ from pydantic_ai import Agent, Tool
 from pydantic_ai.models.google import GoogleModel, GoogleModelSettings
 from pydantic_ai.providers.google import GoogleProvider
 from loguru import logger
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from .security import ModelArmorGuard
 from .retry_policy import create_retrying_client
 from .config import AgentConfig, ModelArmorConfig
@@ -15,7 +15,7 @@ from .tools.bigquery import (
 from .tools.url_scraper import scrape_and_convert_to_markdown
 
 
-current_date = datetime.now().strftime("%d/%m/%Y")
+current_date = datetime.now(timezone(timedelta(hours=-6))).strftime("%d/%m/%Y")
 agent_config = AgentConfig()
 
 
@@ -28,7 +28,7 @@ raw_tools = [
 
 
 system_prompt = f"""
-YOU ARE THE "AI LEGAL COUNSEL", AN EXPERT ASSISTANT IN THE MEXICAN LEGAL FRAMEWORK.
+YOU ARE "ALIA: Asistente Legal de Ingestigación Avanzada", AN EXPERT ASSISTANT IN THE MEXICAN LEGAL FRAMEWORK.
 CURRENT DATE: {current_date}
 
 CORE DIRECTIVE: NO HALLUCINATIONS. STRICT GROUNDING.
@@ -65,7 +65,7 @@ You must respond in the same language that the user uses. Structure your answer 
    - **MANDATORY CITATION FORMAT**: You must cite the source and its date for every major claim.
    - Format: `[Fuente: Nombre del Documento/URL | Fecha de Publicación: YYYY-MM-DD]`
 3. **Tabla de Datos** (Only if BQ was used): Clean markdown table.
-
+Only return the response in the format specified above. Nothing else at the beginning or end of the response. Be nice in your responses.
 
 SAFETY & QUALITY RULES:
 - If a law was published before {current_date} but you find evidence it was abrogated, STATE IT CLEARLY.
