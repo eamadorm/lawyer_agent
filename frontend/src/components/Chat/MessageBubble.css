@@ -52,7 +52,63 @@
 }
 
 /* Handle tables and code blocks specially to prevent blowout */
-.markdown-content table,
+/* Handle tables */
+.markdown-content table {
+    border-collapse: collapse;
+    margin: 1rem 0;
+    width: 100%;
+    font-size: 0.9rem;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+}
+
+.markdown-content th {
+    padding: 0.75rem 1rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.markdown-content td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Agent Table Styles (Dark) */
+.agent .markdown-content table {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.agent .markdown-content th {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-inverse);
+    font-weight: 600;
+}
+
+.agent .markdown-content td {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-inverse);
+}
+
+/* User Table Styles (Light) */
+.user .markdown-content table {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+.user .markdown-content th {
+    background-color: #f8fafc;
+    color: var(--color-text-primary);
+    border-color: #e2e8f0;
+    font-weight: 600;
+}
+
+.user .markdown-content td {
+    border-color: #e2e8f0;
+    color: var(--color-text-primary);
+}
+
 .markdown-content pre {
     display: block;
     max-width: 100%;
@@ -61,7 +117,6 @@
     border-radius: 4px;
 }
 
-.agent .markdown-content table,
 .agent .markdown-content pre {
     background: rgba(255, 255, 255, 0.05);
 }

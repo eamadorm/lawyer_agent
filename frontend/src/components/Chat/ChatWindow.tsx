@@ -102,7 +102,7 @@ export const ChatWindow: React.FC = () => {
                         alignItems: 'center',
                         boxShadow: 'var(--shadow-sm)'
                     }}>
-                        <h2 style={{ margin: 0, color: 'var(--color-primary)', fontSize: '1.25rem' }}>Lawyer Agent</h2>
+                        <h2 style={{ margin: 0, color: 'var(--color-primary)', fontSize: '1.25rem' }}>ALIA: Asistente Legal de Investigación Avanzada</h2>
                         {conversationId && (
                             <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
                                 ID: {conversationId.substring(0, 8)}...

@@ -85,7 +85,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
                 <textarea
                     ref={textareaRef}
                     className="message-input"
-                    placeholder="Pregunta algo al lawyer agent"
+                    placeholder="Preguntar a ALIA"
                     value={input}
                     onChange={(e) => {
                         setInput(e.target.value);
