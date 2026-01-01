@@ -35,3 +35,17 @@ class DBConfig(BaseSettings):
             default="prompt_id",
         ),
     ]
+    USERS_TABLE_NAME: Annotated[
+        str,
+        Field(
+            description="Name of the Users BQ table",
+            default="users",
+        ),
+    ]
+    USERS_TABLE_PK: Annotated[
+        str,
+        Field(
+            description="PK of the Users BQ table",
+            default="user_id",
+        ),
+    ]

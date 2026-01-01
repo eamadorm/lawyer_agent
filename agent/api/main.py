@@ -3,11 +3,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from pydantic_core import to_jsonable_python
-from typing import List, Optional, Dict, Any
 
 from .schemas import ChatRequest, ChatResponse, HealthResponse
 from ..database.tables.conversations import BQConversationsTable
-from ..database.schemas import ConversationsRequest
+from ..database.schemas import ConversationsRequest, UserRecord, AgentRecord
 from ..main import agent 
 from ..config import AgentConfig, ModelArmorConfig
 from ..security import ModelArmorGuard
@@ -95,9 +94,14 @@ async def chat(request: ChatRequest):
         # 6. Save to Database
         conv_req = ConversationsRequest(
             conversation_id=conversation_id, # Can be None
-            user_prompt=request.message,
-            agent_response=safe_response,
-            agent_response_steps=to_jsonable_python(result.new_messages())
+            user=UserRecord(
+                id=request.user_id,
+                prompt=request.message,
+            ),
+            agent=AgentRecord(
+                response=safe_response,
+                steps=to_jsonable_python(result.new_messages())
+            ),
         )
         
         # add_row handles ID generation if needed
