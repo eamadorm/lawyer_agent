@@ -6,7 +6,8 @@ from pydantic_core import to_jsonable_python
 
 from .schemas import ChatRequest, ChatResponse, HealthResponse
 from ..database.tables.conversations import BQConversationsTable
-from ..database.schemas import ConversationsRequest, UserRecord, AgentRecord
+from ..database.tables.users import BQUsersTable
+from ..database.schemas import ConversationsRequest, UserRecord, AgentRecord, CreateUserRequest, UserResponse
 from ..main import agent 
 from ..config import AgentConfig, ModelArmorConfig
 from ..security import ModelArmorGuard
@@ -30,6 +31,7 @@ app.add_middleware(
 )
 
 conversations_table = BQConversationsTable()
+users_table = BQUsersTable()
 agent_config = AgentConfig()
 armor_config = ModelArmorConfig()
 
@@ -42,7 +44,12 @@ security_guard = ModelArmorGuard(
 
 @app.get("/", response_model=HealthResponse)
 async def health_check():
-    """Health check endpoint."""
+    """
+    Health check endpoint to verify service status.
+
+    Returns:
+        HealthResponse: The status of the service (healthy) and basic info.
+    """
     return HealthResponse(
         status="healthy",
         service="Lawyer Agent API",
@@ -50,10 +57,30 @@ async def health_check():
     )
 
 
+@app.post("/create_user", response_model=UserResponse)
+async def create_user(request: CreateUserRequest):
+    """
+    Endpoint to create a new user.
+
+    Args:
+        request (CreateUserRequest): The request containing new user details (name, email, hashed_password).
+
+    Returns:
+        UserResponse: The result of the creation operation including the new user ID.
+    """
+    return users_table.create_user(request)
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
     Chat endpoint to interact with the agent.
+
+    Args:
+        request (ChatRequest): The chat message and context, including user_id.
+
+    Returns:
+        ChatResponse: The agent's response, conversation ID, and executed queries.
     """
     conversation_id = request.conversation_id
     chat_history = []
