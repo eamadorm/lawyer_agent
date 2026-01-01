@@ -1,6 +1,6 @@
 from .bq_base_table import BigQueryTable
 from ..config import DBConfig
-from ..schemas import User, UserResponse, CreateUserRequest, UpdatePasswordRequest, DeleteUserRequest
+from ..schemas import User, UserResponse, CreateUserRequest, UpdatePasswordRequest, DeleteUserRequest, LoginRequest
 from ..bq_utils import query_data, insert_rows_from_json
 from loguru import logger
 from datetime import datetime, timezone
@@ -224,3 +224,33 @@ class BQUsersTable(BigQueryTable):
             msg = f"Error updating user {user_id}: {e}"
             logger.error(msg)
             return UserResponse(user_id=user_id, message=msg, status="error")
+
+    def authenticate_user(self, request: LoginRequest) -> UserResponse:
+        """
+        Authenticates a user by verifying credentials.
+
+        Args:
+            request (LoginRequest): Request containing email and hashed_password.
+
+        Returns:
+            UserResponse: The response containing the user_id if successful, or error status.
+        """
+        user_id = self._generate_id(request.email)
+
+        # 1. Check existence
+        if not self._id_in_table(user_id, self.primary_key, self.name):
+            msg = f"Authentication failed: User with email {request.email} not found."
+            logger.warning(msg)
+            return UserResponse(user_id=None, message=msg, status="error")
+
+        # 2. Verify Password
+        stored_hash = self._get_stored_password_hash(user_id)
+
+        if stored_hash != request.hashed_password:
+             msg = "Authentication failed: Incorrect password."
+             logger.warning(msg)
+             return UserResponse(user_id=None, message=msg, status="error")
+
+        msg = "User authenticated successfully."
+        logger.info(f"User {user_id} logged in.")
+        return UserResponse(user_id=user_id, message=msg, status="success")

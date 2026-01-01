@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from pydantic_core import to_jsonable_python
@@ -7,7 +7,7 @@ from pydantic_core import to_jsonable_python
 from .schemas import ChatRequest, ChatResponse, HealthResponse
 from ..database.tables.conversations import BQConversationsTable
 from ..database.tables.users import BQUsersTable
-from ..database.schemas import ConversationsRequest, UserRecord, AgentRecord, CreateUserRequest, UserResponse
+from ..database.schemas import ConversationsRequest, UserRecord, AgentRecord, CreateUserRequest, UserResponse, LoginRequest
 from ..main import agent 
 from ..config import AgentConfig, ModelArmorConfig
 from ..security import ModelArmorGuard
@@ -58,7 +58,7 @@ async def health_check():
 
 
 @app.post("/create_user", response_model=UserResponse)
-async def create_user(request: CreateUserRequest):
+async def create_user(request: CreateUserRequest, response: Response):
     """
     Endpoint to create a new user.
 
@@ -68,7 +68,27 @@ async def create_user(request: CreateUserRequest):
     Returns:
         UserResponse: The result of the creation operation including the new user ID.
     """
-    return users_table.create_user(request)
+    result = users_table.create_user(request)
+    if result.status == "error":
+        response.status_code = 400
+    return result
+
+
+@app.post("/login", response_model=UserResponse)
+async def login(request: LoginRequest, response: Response):
+    """
+    Endpoint to authenticate an existing user.
+    
+    Args:
+        request (LoginRequest): The request containing email and hashed_password.
+        
+    Returns:
+        UserResponse: The result of the authentication, including user_id if successful.
+    """
+    result = users_table.authenticate_user(request)
+    if result.status == "error":
+        response.status_code = 401
+    return result
 
 
 @app.post("/chat", response_model=ChatResponse)

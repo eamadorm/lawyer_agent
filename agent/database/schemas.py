@@ -108,6 +108,14 @@ class CreateUserRequest(BaseModel):
     hashed_password: HASH_PASSWORD_FIELD
 
 
+class LoginRequest(BaseModel):
+    """
+    Request model for user login.
+    """
+    email: USER_EMAIL_FIELD
+    hashed_password: HASH_PASSWORD_FIELD
+
+
 class UpdatePasswordRequest(BaseModel):
     """
     Request model for updating an existing user's password.
