@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { User, Bot } from 'lucide-react';
 import type { Message } from '../../types/chat';
+import liaIcon from '../../assets/lia_icon_gold.png';
+import userIcon from '../../assets/user_icon.png';
 import './MessageBubble.css';
 
 interface MessageBubbleProps {
@@ -24,7 +25,27 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     return (
         <div className={`message-container ${isAgent ? 'agent' : 'user'}`}>
             <div className="avatar">
-                {isAgent ? <Bot size={20} /> : <User size={20} />}
+                {isAgent ? (
+                    <img
+                        src={liaIcon}
+                        alt="LIA"
+                        style={{
+                            width: '36px',
+                            height: '36px',
+                            objectFit: 'contain'
+                        }}
+                    />
+                ) : (
+                    <img
+                        src={userIcon}
+                        alt="User"
+                        style={{
+                            width: '53px',
+                            height: '53px',
+                            objectFit: 'contain'
+                        }}
+                    />
+                )}
             </div>
             <div className="message-content">
                 <div className="bubble">
