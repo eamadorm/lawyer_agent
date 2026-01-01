@@ -7,6 +7,7 @@ ARMOR_TEMPLATE_ID=agent-template
 AGENT_DATASET=lawyer_app
 ARTIFACT_REGISTRY_NAME=ai-agents
 AGENT_API_IMAGE_NAME=$(LAWYER_AGENT_REGION)-docker.pkg.dev/$(PROJECT_ID)/$(ARTIFACT_REGISTRY_NAME)/lawyer-agent-api:1.0.0
+FRONTEND_IMAGE_NAME=$(LAWYER_AGENT_REGION)-docker.pkg.dev/$(PROJECT_ID)/$(ARTIFACT_REGISTRY_NAME)/lawyer-agent-frontend:1.0.0
 
 run-agent:
 	uv run --group agent -m agent.main
@@ -35,6 +36,26 @@ build-deploy-agent-api:
 	make push-agent-image
 	make deploy-agent-image
 
+# --- FRONTEND COMMANDS ---
+
+build-frontend-image:
+	docker build -f frontend/Dockerfile -t $(FRONTEND_IMAGE_NAME) frontend
+
+push-frontend-image:
+	docker push $(FRONTEND_IMAGE_NAME)
+
+deploy-frontend-image:
+	gcloud run deploy lawyer-agent-frontend \
+	--image=$(FRONTEND_IMAGE_NAME) \
+	--region=$(LAWYER_AGENT_REGION) \
+	--allow-unauthenticated \
+	--port=80
+
+build-deploy-frontend:
+	make build-frontend-image
+	make push-frontend-image
+	make deploy-frontend-image
+
 test-dof-pipeline:
 	uv run --group dof_pipeline -m pipelines.dof.main --start_date 02/01/2025
 
@@ -47,6 +68,7 @@ deploy-dof-pipeline:
 	--source=pipelines/dof \
 	--entry-point=scrape_dof_function \
 	--trigger-http \
+	--timeout=3600s \
 	--set-env-vars=PROJECT_ID=$(PROJECT_ID) \
 	--no-allow-unauthenticated \
 	--service-account=dof-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com

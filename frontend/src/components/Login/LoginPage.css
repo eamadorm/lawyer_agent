@@ -1,0 +1,398 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+.login-container {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background-color: #0f172a;
+    font-family: sans-serif;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.login-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: transparent;
+}
+
+.login-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    padding: 0 2rem;
+    justify-content: flex-end;
+    /* Move card to the right */
+    align-items: center;
+    flex-wrap: wrap-reverse;
+    gap: 4rem;
+    padding-right: 10%;
+    /* Add spacing from the right edge */
+}
+
+/* Updated Colors to Professional Blue Palette */
+
+.login-branding {
+    position: absolute;
+    /* Take out of flow to place in corner */
+    top: 50%;
+    /* Center vertically */
+    left: 4rem;
+    /* Keep horizontal spacing */
+    transform: translateY(-50%);
+    /* Adjust for height to truly center */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    /* Reduced gap */
+    max-width: none;
+    text-align: left;
+    /* Align left for top-left corner */
+    align-items: flex-start;
+    z-index: 20;
+}
+
+.login-welcome-text {
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    /* Match title style */
+    font-size: 1.8rem;
+    /* Increased size */
+    font-weight: 800;
+    /* Bolder */
+    letter-spacing: 0.1em;
+    color: #cbd5e1;
+    margin: 0;
+    margin-bottom: -2rem;
+    /* Adjusted negative margin for 7/8 title */
+    margin-left: 0.5rem;
+    z-index: 25;
+    /* Ensure above if overlaps */
+}
+
+.login-title {
+    font-family: 'Montserrat', sans-serif;
+    /* Revert to Montserrat */
+    font-style: italic;
+    /* Revert to Italic */
+    font-size: 7.5rem;
+    /* Reduced to 7/8ths */
+    /* Adjusted size for corner logo */
+    font-weight: 800;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.15em;
+
+    /* Added spacing to mimic dots presence */
+}
+
+.login-subtitle {
+    font-size: 1.25rem;
+    /* Reduced from 1.5rem */
+    font-family: 'Montserrat', sans-serif;
+    /* Match title */
+    font-style: italic;
+    /* Match title */
+    font-weight: 600;
+    /* Semi-bold */
+    letter-spacing: 0.05em;
+    color: #e2e8f0;
+
+    border: none;
+    background: transparent;
+    padding: 0;
+
+    margin-top: -8rem;
+    /* Tighter negative margin for mobile details */
+    margin-left: 0;
+    /* Align perfectly with title */
+    text-transform: uppercase;
+
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 25;
+    /* Ensure visibility */
+}
+
+@media (min-width: 768px) {
+
+    /* Grid Layout for Desktop: 50/50 Split */
+    .login-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        justify-items: center;
+    }
+
+    .login-branding {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        grid-column: 1;
+        justify-self: center;
+        align-items: flex-start;
+        width: 100%;
+        padding-left: 10%;
+        /* Visual anchor from left */
+    }
+
+    .login-content {
+        grid-column: 2;
+        padding: 0;
+        justify-content: center;
+        width: 100%;
+        max-width: none;
+    }
+
+    /* Switch to viewport units for proportional scaling on larger screens */
+    .login-welcome-text {
+        font-size: 2vw;
+        margin-bottom: -2.3vw;
+    }
+
+    .login-title {
+        font-size: 12vw;
+    }
+
+    .login-subtitle {
+        font-size: 1.4vw;
+        margin-top: -9vw;
+        /* Extremely tight margin to be just below title */
+        text-transform: uppercase;
+    }
+
+    .login-card {
+        max-width: 65vh;
+        /* Constrain by height to prevent massive width on wide screens */
+        width: 100%;
+        padding: 4vh;
+        /* Padding based on height */
+        border-radius: 2vh;
+    }
+
+    /* Scale internal text based on height so it doesn't get huge */
+    .section-title {
+        font-size: 3vh;
+        margin-bottom: 2vh;
+    }
+
+    .form-header {
+        font-size: 2.5vh;
+    }
+
+    .btn {
+        font-size: 1.8vh;
+        padding: 1.5vh 2.5vh;
+        gap: 1vh;
+    }
+
+    .form-label {
+        font-size: 1.6vh;
+    }
+
+    .form-input {
+        font-size: 1.8vh;
+        padding: 1.2vh 1.5vh 1.2vh 4.5vh;
+    }
+
+    .input-icon {
+        width: 2.2vh;
+        height: 2.2vh;
+        left: 1.5vh;
+    }
+
+    .back-btn {
+        font-size: 1.6vh;
+    }
+}
+
+.login-card {
+    width: 100%;
+    max-width: 28rem;
+    background-color: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(12px);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    transition: all 0.5s ease-in-out;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    text-align: center;
+    color: white;
+    margin-bottom: 1rem;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.form-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    /* Increased spacing as requested */
+}
+
+.form-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    /* Bold */
+    color: white !important;
+    /* Force white color */
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    transition: all 0.2s;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+}
+
+.btn-primary {
+    background: #02042b;
+    /* Deep Navy Blue (very dark) */
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    border: 1px solid #1e3a8a;
+    /* Subtle slightly lighter border */
+}
+
+.btn-primary:hover {
+    background: #000000;
+    /* Almost black on hover for contrast */
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+    border-color: #38bdf8;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid #94a3b8;
+    color: #e2e8f0;
+}
+
+.btn-outline:hover {
+    border-color: #38bdf8;
+    color: white;
+    background-color: rgba(56, 189, 248, 0.1);
+    transform: translateY(-2px);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-left: 0.25rem;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.form-input {
+    width: 100%;
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid #475569;
+    color: white;
+    padding: 0.75rem 1rem 0.75rem 2.8rem;
+    border-radius: 9999px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    background-color: rgba(15, 23, 42, 0.9);
+}
+
+.back-btn {
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    color: white;
+}
+
+.error-msg {
+    padding: 0.75rem;
+    background-color: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 0.5rem;
+    color: #fecaca;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.success-msg {
+    padding: 0.75rem;
+    background-color: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.5);
+    border-radius: 0.5rem;
+    color: #bbf7d0;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}

@@ -1,0 +1,182 @@
+.message-container {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    max-width: 85%;
+}
+
+.message-container.user {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.message-container.agent {
+    margin-right: auto;
+}
+
+.avatar {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-navy-700);
+    color: var(--color-gold-500);
+}
+
+.user .avatar {
+    background-color: var(--color-gold-500);
+    color: var(--color-navy-900);
+    width: 66px;
+    height: 66px;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.bubble {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--bg-panel);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-sm);
+    line-height: 1.5;
+    word-wrap: break-word;
+    /* legacy */
+    overflow-wrap: break-word;
+    /* modern */
+    /* Ensure the bubble itself doesn't cause horizontal scroll, but allow inner scroll if needed */
+    min-width: 0;
+}
+
+/* Handle tables and code blocks specially to prevent blowout */
+/* Handle tables */
+.markdown-content table {
+    border-collapse: collapse;
+    margin: 1rem 0;
+    width: 100%;
+    font-size: 0.9rem;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+}
+
+.markdown-content th {
+    padding: 0.75rem 1rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.markdown-content td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Agent Table Styles (Dark) */
+.agent .markdown-content table {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.agent .markdown-content th {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-inverse);
+    font-weight: 600;
+}
+
+.agent .markdown-content td {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-inverse);
+}
+
+/* User Table Styles (Light) */
+.user .markdown-content table {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+.user .markdown-content th {
+    background-color: #f8fafc;
+    color: var(--color-text-primary);
+    border-color: #e2e8f0;
+    font-weight: 600;
+}
+
+.user .markdown-content td {
+    border-color: #e2e8f0;
+    color: var(--color-text-primary);
+}
+
+.markdown-content pre {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 4px;
+}
+
+.agent .markdown-content pre {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.user .bubble {
+    background-color: var(--bg-panel);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-primary);
+    border-top-right-radius: 0;
+}
+
+.agent .bubble {
+    background-color: var(--color-navy-800);
+    color: var(--color-text-inverse);
+    border: 1px solid var(--color-navy-800);
+    border-top-left-radius: 0;
+}
+
+/* Markdown Styles inside bubble */
+.markdown-content p {
+    margin: 0 0 0.5em 0;
+}
+
+.markdown-content p:last-child {
+    margin-bottom: 0;
+}
+
+.markdown-content code {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: monospace;
+    color: var(--color-text-primary);
+}
+
+.agent .markdown-content code {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-inverse);
+}
+
+.agent .markdown-content,
+.agent .markdown-content p,
+.agent .markdown-content strong,
+.agent .markdown-content em,
+.agent .markdown-content li {
+    color: var(--color-text-inverse);
+}
+
+.attachments {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.attachment-preview {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: var(--border-radius-md);
+    object-fit: cover;
+}

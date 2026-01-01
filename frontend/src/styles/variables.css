@@ -1,0 +1,72 @@
+:root {
+    /* Colors */
+    --color-primary: #0141CF;
+    --color-primary-dark: #0030a0;
+    --color-primary-light: #4D7BFF;
+
+    --color-accent: #FD7F00;
+    --color-accent-light: #FF9F40;
+
+    --bg-app: #F9F9F7;
+    --bg-panel: #FFFFFF;
+
+    --color-navy-900: #0a192f;
+    /* Keeping for legacy or deep contrast if needed */
+    --color-navy-800: #112240;
+
+    --color-text-primary: #1A202C;
+    --color-text-secondary: #4A5568;
+    --color-text-inverse: #FFFFFF;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    /* Borders */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Fonts */
+    --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: var(--bg-app);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-sans);
+    margin: 0;
+    min-height: 100vh;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}

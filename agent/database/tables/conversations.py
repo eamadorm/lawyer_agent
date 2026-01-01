@@ -172,7 +172,7 @@ class BQConversationsTable(BigQueryTable):
                 array_agg(steps ORDER BY prompt_created_at ASC) as full_history
 
                 FROM `{self.project_id}.{self.dataset_id}.{self.name}`,
-                UNNEST(agent_response_steps) steps
+                UNNEST(agent.steps) steps
                 WHERE conversation_id = '{conversation_id}'
 
                 GROUP BY conversation_id
