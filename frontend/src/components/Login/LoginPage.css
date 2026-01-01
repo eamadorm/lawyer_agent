@@ -1,0 +1,224 @@
+.login-container {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background-color: #0f172a;
+    /* slate-900 */
+    font-family: sans-serif;
+    color: #f1f5f9;
+    /* slate-100 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    /* User wanted full background, removing opacity/blend if it hides it too much, 
+       but keeping a slight tint for text readability is good practice. 
+       Let's keep it clean as requested "background completo". */
+}
+
+.login-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    /* Removed gradient to ensure full image visibility as requested */
+    background: transparent;
+}
+
+.login-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    /* lg:px-24 roughly */
+    padding: 0 2rem;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    /* for mobile */
+    gap: 2rem;
+}
+
+.login-branding {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 36rem;
+}
+
+.login-title {
+    font-size: 3.75rem;
+    /* 6xl */
+    font-weight: 800;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+    .login-title {
+        font-size: 6rem;
+        /* 8xl */
+    }
+}
+
+.highlight {
+    color: #f59e0b;
+    /* amber-500 */
+}
+
+.login-subtitle {
+    font-size: 1.25rem;
+    /* xl */
+    color: #cbd5e1;
+    /* slate-300 */
+    font-weight: 300;
+    border-left: 4px solid #f59e0b;
+    padding-left: 1rem;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 28rem;
+    /* max-w-md */
+    background-color: rgba(30, 41, 59, 0.8);
+    /* slate-800/80 */
+    backdrop-filter: blur(12px);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    transition: all 0.5s ease-in-out;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    text-align: center;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 9999px;
+    /* rounded-full */
+    font-weight: 700;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #f59e0b;
+    color: #0f172a;
+    box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: #d97706;
+    transform: scale(1.02);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid #94a3b8;
+    color: #cbd5e1;
+}
+
+.btn-outline:hover {
+    border-color: white;
+    color: white;
+    transform: scale(1.02);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #cbd5e1;
+    margin-left: 0.25rem;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.form-input {
+    width: 100%;
+    background-color: rgba(15, 23, 42, 0.5);
+    border: 1px solid #475569;
+    color: white;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    /* pl-10 */
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 1px #f59e0b;
+}
+
+.back-btn {
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    color: white;
+}
+
+.error-msg {
+    padding: 0.75rem;
+    background-color: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 0.5rem;
+    color: #fecaca;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
