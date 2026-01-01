@@ -6,6 +6,9 @@ DOF_PIPELINE_REGION=us-central1
 run-agent:
 	uv run --group agent -m agent.main
 
+run-agent-api:
+	uv run --group agent -m uvicorn agent.api.main:app --host 0.0.0.0 --port 8080 --reload
+
 test-dof-pipeline:
 	uv run --group dof_pipeline -m pipelines.dof.main --start_date 02/01/2025
 
