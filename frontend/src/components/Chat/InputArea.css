@@ -51,6 +51,11 @@
 .send-btn {
     padding: var(--spacing-xs) var(--spacing-sm) !important;
     border-radius: var(--border-radius-md) !important;
+    flex-shrink: 0;
+    /* Prevent button from squishing or growing */
+    width: auto !important;
+    /* Ensure it doesn't take full width */
+    height: fit-content;
 }
 
 /* Attachment Previews */
