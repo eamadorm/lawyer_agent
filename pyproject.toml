@@ -23,6 +23,9 @@ agent = [
     "pydantic-settings>=2.11.0",
     "uvicorn>=0.37.0",
     "datetime>=6.0",
+    "requests>=2.32.5",
+    "beautifulsoup4>=4.12.3",
+    "markdownify>=0.11.6",
 ]
 dof_pipeline = [
     "bs4>=0.0.2",
