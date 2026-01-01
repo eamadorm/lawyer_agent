@@ -1,13 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 .login-container {
     position: relative;
     min-height: 100vh;
     width: 100%;
     overflow: hidden;
     background-color: #0f172a;
-    /* slate-900 */
     font-family: sans-serif;
     color: #f1f5f9;
-    /* slate-100 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -20,16 +20,12 @@
     height: 100%;
     object-fit: cover;
     z-index: 0;
-    /* User wanted full background, removing opacity/blend if it hides it too much, 
-       but keeping a slight tint for text readability is good practice. 
-       Let's keep it clean as requested "background completo". */
 }
 
 .login-overlay {
     position: absolute;
     inset: 0;
     z-index: 0;
-    /* Removed gradient to ensure full image visibility as requested */
     background: transparent;
 }
 
@@ -39,64 +35,68 @@
     display: flex;
     width: 100%;
     max-width: 1400px;
-    /* lg:px-24 roughly */
     padding: 0 2rem;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    /* for mobile */
-    gap: 2rem;
+    flex-wrap: wrap-reverse;
+    gap: 4rem;
 }
+
+/* Updated Colors to Professional Blue Palette */
 
 .login-branding {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
     max-width: 36rem;
+    text-align: right;
+    align-items: flex-end;
 }
 
 .login-title {
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
     font-size: 3.75rem;
-    /* 6xl */
     font-weight: 800;
     line-height: 1;
     color: white;
-    text-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 
 @media (min-width: 768px) {
     .login-title {
         font-size: 6rem;
-        /* 8xl */
     }
 }
 
 .highlight {
-    color: #f59e0b;
-    /* amber-500 */
+    color: #38bdf8;
+    /* Professional Light Blue */
 }
 
 .login-subtitle {
-    font-size: 1.25rem;
-    /* xl */
-    color: #cbd5e1;
-    /* slate-300 */
-    font-weight: 300;
-    border-left: 4px solid #f59e0b;
-    padding-left: 1rem;
+    font-size: 1.5rem;
+    color: #e2e8f0;
+    font-weight: 500;
+    border-right: 4px solid #38bdf8;
+    border-left: none;
+    padding-right: 1rem;
+    padding-left: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    background: rgba(15, 23, 42, 0.4);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
 }
 
 .login-card {
     width: 100%;
     max-width: 28rem;
-    /* max-w-md */
-    background-color: rgba(30, 41, 59, 0.8);
-    /* slate-800/80 */
+    background-color: rgba(15, 23, 42, 0.75);
     backdrop-filter: blur(12px);
     padding: 2rem;
     border-radius: 1rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(51, 65, 85, 0.5);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     transition: all 0.5s ease-in-out;
 }
 
@@ -112,6 +112,25 @@
     text-align: center;
     color: white;
     margin-bottom: 1rem;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.form-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    /* Increased spacing as requested */
+}
+
+.form-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    /* Bold */
+    color: white !important;
+    /* Force white color */
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .btn {
@@ -122,33 +141,40 @@
     width: 100%;
     padding: 1rem 1.5rem;
     border-radius: 9999px;
-    /* rounded-full */
     font-weight: 700;
     transition: all 0.2s;
     cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
 }
 
 .btn-primary {
-    background-color: #f59e0b;
-    color: #0f172a;
-    box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.2);
+    background: #1e3a8a;
+    /* Dark Blue as requested */
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    border: 1px solid #1e40af;
 }
 
 .btn-primary:hover {
-    background-color: #d97706;
-    transform: scale(1.02);
+    background: #172554;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    border-color: #38bdf8;
 }
 
 .btn-outline {
     background-color: transparent;
     border: 2px solid #94a3b8;
-    color: #cbd5e1;
+    color: #e2e8f0;
 }
 
 .btn-outline:hover {
-    border-color: white;
+    border-color: #38bdf8;
     color: white;
-    transform: scale(1.02);
+    background-color: rgba(56, 189, 248, 0.1);
+    transform: translateY(-2px);
 }
 
 .form-group {
@@ -160,7 +186,7 @@
 
 .form-label {
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     color: #cbd5e1;
     margin-left: 0.25rem;
 }
@@ -171,7 +197,7 @@
 
 .input-icon {
     position: absolute;
-    left: 0.75rem;
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
     color: #94a3b8;
@@ -181,20 +207,20 @@
 
 .form-input {
     width: 100%;
-    background-color: rgba(15, 23, 42, 0.5);
+    background-color: rgba(15, 23, 42, 0.6);
     border: 1px solid #475569;
     color: white;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
-    /* pl-10 */
-    border-radius: 0.75rem;
+    padding: 0.75rem 1rem 0.75rem 2.8rem;
+    border-radius: 9999px;
     font-size: 1rem;
     outline: none;
     transition: all 0.2s;
 }
 
 .form-input:focus {
-    border-color: #f59e0b;
-    box-shadow: 0 0 0 1px #f59e0b;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    background-color: rgba(15, 23, 42, 0.9);
 }
 
 .back-btn {

@@ -85,19 +85,7 @@ export const LoginPage = () => {
 
             <div className="login-content">
 
-                {/* Left Side: Branding */}
-                <div className="login-branding">
-                    <h1 className="login-title">
-                        Bienvenido <br />
-                        <span className="highlight">a ALIA</span>
-                    </h1>
-                    <p className="login-subtitle">
-                        Tu asistente legal inteligente.<br />
-                        Justicia, precisión y tecnología a tu alcance.
-                    </p>
-                </div>
-
-                {/* Right Side: Interaction Area */}
+                {/* Left Side: Interaction Area (Swapped) */}
                 <div className="login-card">
 
                     {/* Landing Mode: Buttons */}
@@ -109,16 +97,16 @@ export const LoginPage = () => {
                                 onClick={() => setMode('login')}
                                 className="btn btn-primary group"
                             >
-                                <User className="w-6 h-6" />
+                                <User className="w-5 h-5" />
                                 <span>Entrar a mi Cuenta</span>
-                                <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                             </button>
 
                             <button
                                 onClick={() => setMode('register')}
                                 className="btn btn-outline"
                             >
-                                <Mail className="w-6 h-6" />
+                                <Mail className="w-5 h-5" />
                                 <span>Registrarse</span>
                             </button>
                         </div>
@@ -127,7 +115,7 @@ export const LoginPage = () => {
                     {/* Login Form */}
                     {mode === 'login' && (
                         <form onSubmit={handleLogin} className="flex flex-col gap-4 animate-fade-in">
-                            <div className="flex items-center justify-between mb-2">
+                            <div className="form-title-row">
                                 <button
                                     type="button"
                                     onClick={() => { setMode('landing'); resetForm(); }}
@@ -135,7 +123,7 @@ export const LoginPage = () => {
                                 >
                                     <ArrowLeft className="w-4 h-4 mr-1" /> Volver
                                 </button>
-                                <h2 className="text-2xl font-bold text-white m-0">Iniciar Sesión</h2>
+                                <h2 className="form-header">Iniciar Sesión</h2>
                             </div>
 
                             {error && (
@@ -187,7 +175,7 @@ export const LoginPage = () => {
                     {/* Register Form */}
                     {mode === 'register' && (
                         <form onSubmit={handleRegister} className="flex flex-col gap-4 animate-fade-in">
-                            <div className="flex items-center justify-between mb-2">
+                            <div className="form-title-row">
                                 <button
                                     type="button"
                                     onClick={() => { setMode('landing'); resetForm(); }}
@@ -195,7 +183,7 @@ export const LoginPage = () => {
                                 >
                                     <ArrowLeft className="w-4 h-4 mr-1" /> Volver
                                 </button>
-                                <h2 className="text-2xl font-bold text-white m-0">Crear Cuenta</h2>
+                                <h2 className="form-header">Crear Cuenta</h2>
                             </div>
 
                             {error && (
@@ -262,6 +250,19 @@ export const LoginPage = () => {
                         </form>
                     )}
                 </div>
+
+                {/* Right Side: Branding (Swapped) */}
+                <div className="login-branding">
+                    <h1 className="login-title">
+                        Bienvenido <br />
+                        <span className="highlight">a ALIA</span>
+                    </h1>
+                    <p className="login-subtitle">
+                        Tu asistente legal inteligente.<br />
+                        Justicia, precisión y tecnología a tu alcance.
+                    </p>
+                </div>
+
             </div>
         </div>
     )
