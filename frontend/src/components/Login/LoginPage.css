@@ -50,8 +50,12 @@
 .login-branding {
     position: absolute;
     /* Take out of flow to place in corner */
-    top: 2rem;
-    left: 3rem;
+    top: 50%;
+    /* Center vertically */
+    left: 4rem;
+    /* Keep horizontal spacing */
+    transform: translateY(-50%);
+    /* Adjust for height to truly center */
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -74,8 +78,8 @@
     letter-spacing: 0.1em;
     color: #cbd5e1;
     margin: 0;
-    margin-bottom: -1.2rem;
-    /* Pull closer to title, overlapping space */
+    margin-bottom: -2rem;
+    /* Adjusted negative margin for 7/8 title */
     margin-left: 0.5rem;
     z-index: 25;
     /* Ensure above if overlaps */
@@ -86,19 +90,23 @@
     /* Revert to Montserrat */
     font-style: italic;
     /* Revert to Italic */
-    font-size: 5.5rem;
-    /* Increased size as requested */
+    font-size: 7.5rem;
+    /* Reduced to 7/8ths */
     /* Adjusted size for corner logo */
     font-weight: 800;
     line-height: 1;
     color: white;
     text-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.15em;
+    /* Added spacing to mimic dots presence */
 }
+
+
 
 @media (min-width: 768px) {
     .login-title {
-        font-size: 7rem;
-        /* Even larger on desktop */
+        font-size: 10.5rem;
+        /* Reduced to 7/8ths */
     }
 }
 
@@ -108,17 +116,31 @@
 }
 
 .login-subtitle {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+    /* Reduced from 1.5rem */
+    font-family: 'Montserrat', sans-serif;
+    /* Match title */
+    font-style: italic;
+    /* Match title */
+    font-weight: 600;
+    /* Semi-bold */
+    letter-spacing: 0.05em;
     color: #e2e8f0;
-    font-weight: 500;
-    border-right: 4px solid #38bdf8;
-    border-left: none;
-    padding-right: 1rem;
-    padding-left: 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    background: rgba(15, 23, 42, 0.4);
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
+
+    border: none;
+    background: transparent;
+    padding: 0;
+
+    margin: 0;
+    margin-top: -4rem;
+    /* Adjusted negative margin for 7/8 title */
+    margin-left: 0.5rem;
+    /* Align deeply */
+
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 25;
+    /* Ensure visibility */
 }
 
 .login-card {

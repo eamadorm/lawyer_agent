@@ -83,9 +83,19 @@ export const LoginPage = () => {
             />
             <div className="login-overlay" />
 
-            <div className="login-content">
+            {/* Branding Block: Moved outside login-content to prevent shifting */}
+            <div className="login-branding">
+                <p className="login-welcome-text">BIENVENIDO A</p>
+                <h1 className="login-title">
+                    LIA
+                </h1>
+                <p className="login-subtitle">
+                    Asistente Legal de Investigación Avanzada
+                </p>
+            </div>
 
-                {/* Left Side: Interaction Area (Swapped) */}
+            <div className="login-content">
+                {/* Interaction Area */}
                 <div className="login-card">
 
                     {/* Landing Mode: Buttons */}
@@ -253,15 +263,6 @@ export const LoginPage = () => {
 
                 {/* Right Side: Branding (Swapped) */}
                 {/* Right Side: Branding (Swapped) */}
-                <div className="login-branding">
-                    <p className="login-welcome-text">BIENVENIDO A</p>
-                    <h1 className="login-title">
-                        A.I.L.A.
-                    </h1>
-                    <p className="login-subtitle">
-                        Asistente Legal de Investigación Avanzada
-                    </p>
-                </div>
 
             </div>
         </div>
