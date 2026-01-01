@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 .login-container {
     position: relative;
@@ -36,27 +36,59 @@
     width: 100%;
     max-width: 1400px;
     padding: 0 2rem;
-    justify-content: space-between;
+    justify-content: flex-end;
+    /* Move card to the right */
     align-items: center;
     flex-wrap: wrap-reverse;
     gap: 4rem;
+    padding-right: 10%;
+    /* Add spacing from the right edge */
 }
 
 /* Updated Colors to Professional Blue Palette */
 
 .login-branding {
+    position: absolute;
+    /* Take out of flow to place in corner */
+    top: 2rem;
+    left: 3rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    max-width: 36rem;
-    text-align: right;
-    align-items: flex-end;
+    gap: 0.5rem;
+    /* Reduced gap */
+    max-width: none;
+    text-align: left;
+    /* Align left for top-left corner */
+    align-items: flex-start;
+    z-index: 20;
+}
+
+.login-welcome-text {
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    /* Match title style */
+    font-size: 1.8rem;
+    /* Increased size */
+    font-weight: 800;
+    /* Bolder */
+    letter-spacing: 0.1em;
+    color: #cbd5e1;
+    margin: 0;
+    margin-bottom: -1.2rem;
+    /* Pull closer to title, overlapping space */
+    margin-left: 0.5rem;
+    z-index: 25;
+    /* Ensure above if overlaps */
 }
 
 .login-title {
     font-family: 'Montserrat', sans-serif;
+    /* Revert to Montserrat */
     font-style: italic;
-    font-size: 3.75rem;
+    /* Revert to Italic */
+    font-size: 5.5rem;
+    /* Increased size as requested */
+    /* Adjusted size for corner logo */
     font-weight: 800;
     line-height: 1;
     color: white;
@@ -65,7 +97,8 @@
 
 @media (min-width: 768px) {
     .login-title {
-        font-size: 6rem;
+        font-size: 7rem;
+        /* Even larger on desktop */
     }
 }
 

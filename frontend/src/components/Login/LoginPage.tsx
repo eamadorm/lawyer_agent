@@ -252,14 +252,14 @@ export const LoginPage = () => {
                 </div>
 
                 {/* Right Side: Branding (Swapped) */}
+                {/* Right Side: Branding (Swapped) */}
                 <div className="login-branding">
+                    <p className="login-welcome-text">BIENVENIDO A</p>
                     <h1 className="login-title">
-                        Bienvenido <br />
-                        <span className="highlight">a ALIA</span>
+                        A.I.L.A.
                     </h1>
                     <p className="login-subtitle">
-                        Tu asistente legal inteligente.<br />
-                        Justicia, precisión y tecnología a tu alcance.
+                        Asistente Legal de Investigación Avanzada
                     </p>
                 </div>
 
