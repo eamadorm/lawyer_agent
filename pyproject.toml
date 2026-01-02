@@ -35,3 +35,11 @@ dof_pipeline = [
     "loguru>=0.7.2",
     "functions-framework>=3.0.0",
 ]
+
+federal_laws = [
+    "requests>=2.32.5",
+    "pandas>=2.2.0",
+    "beautifulsoup4>=4.12.3",
+    "ipykernel>=6.29.0",
+    "openpyxl>=3.1.2",
+]
