@@ -103,7 +103,8 @@ export const ChatWindow: React.FC = () => {
             const uploadedDocs = [];
             for (const file of files) {
                 const doc = await uploadFile(file, currentConversationId);
-                uploadedDocs.push(doc);
+                // Backend expects list of objects with 'gcs_uri' key
+                uploadedDocs.push({ gcs_uri: doc.url });
             }
 
             // 4. Call Chat API
