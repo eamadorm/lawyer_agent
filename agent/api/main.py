@@ -1,7 +1,9 @@
+import uvicorn
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from pydantic_core import to_jsonable_python
+from pydantic_ai import DocumentUrl
 
 from .schemas import (
     ChatRequest, 
@@ -185,16 +187,26 @@ async def chat(request: ChatRequest):
         )
 
     try:
-        # 3. Run Agent
-        logger.info(f"Running agent for conversation ID: {conversation_id}")
-        result = await agent.run(request.message, message_history=chat_history_formatted)
+        # 3. Construct Agent Input (Text + Documents)
+        agent_input = [request.message, ]
+        
+        if request.documents:
+            logger.info(f"Attaching {len(request.documents)} documents to the prompt.")
+            for doc in request.documents:
+                # Use pydantic_ai.DocumentUrl as requested
+                agent_input.append(DocumentUrl(url=doc.gcs_uri))
 
-        # 4. Extract Results
+        # 4. Run Agent
+        logger.info(f"Running agent for conversation ID: {conversation_id}")
+        # agent.run accepts a list of content parts for multimodal input
+        result = await agent.run(agent_input, message_history=chat_history_formatted)
+
+        # 5. Extract Results
         queries_executed = extract_query_results(result)
         
         raw_response = result.output
         
-        # 5. Security Check (Output)
+        # 6. Security Check (Output)
         safe_response = security_guard.sanitize_response(raw_response)
 
         # 6. Save to Database

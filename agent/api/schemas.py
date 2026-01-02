@@ -10,13 +10,18 @@ class UploadUrlRequest(BaseModel):
     user_id: Annotated[str, Field(description="The ID of the user uploading the file.")]
     conversation_id: Annotated[str, Field(description="The ID of the conversation.")]
 
+
+class Document(BaseModel):
+    gcs_uri: Annotated[str, Field(description="The GCS URI of the document.")]
+
+
 class ChatRequest(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
     
     message: Annotated[str, Field(description="The user's message to the agent.")]
     user_id: Annotated[str, Field(description="The unique identifier for the user.")]
     conversation_id: Annotated[Optional[str], Field(description="The unique identifier for the conversation. If not provided, a new one will be generated.")] = None
-    documents: Annotated[List[DocumentUrl], Field(default = list(), description="List of documents associated with the message.")]
+    documents: Annotated[List[Document], Field(default = list(), description="List of documents associated with the message.")]
 
 
 class UploadUrlResponse(BaseModel):
