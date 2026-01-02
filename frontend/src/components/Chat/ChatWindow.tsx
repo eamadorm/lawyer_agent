@@ -44,9 +44,9 @@ export const ChatWindow: React.FC = () => {
     };
 
     const uploadFile = async (file: File, currentConversationId: string): Promise<{ url: string; media_type: string }> => {
-        // Force content-type to application/pdf since we only allow PDFs and sometimes file.type can be empty or different
-        // This ensures consistency between the signature generation and the actual upload
-        const contentType = 'application/pdf';
+        // Force content-type to application/octet-stream to allow any file type 
+        // (the file extension is validated by the backend)
+        const contentType = 'application/octet-stream';
 
         // 1. Get Signed URL
         const uploadUrlRes = await fetch(`${API_BASE_URL}/get_gcs_upload_url`, {

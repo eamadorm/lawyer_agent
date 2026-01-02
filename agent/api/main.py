@@ -136,6 +136,24 @@ async def get_gcs_upload_url(request: UploadUrlRequest):
     # Path structure: user_documents/<user_id>/<conversation_id>/<filename>
     blob_name = f"user_documents/{request.user_id}/{request.conversation_id}/{request.filename}"
 
+    # Security: Validate file extension
+    ALLOWED_EXTENSIONS = {
+        # Documents (Vertex AI supported)
+        '.pdf', '.txt', '.md', '.html', '.json',
+        # Images
+        '.jpg', '.jpeg', '.png', '.webp', '.svg',
+        # Video/Audio
+        '.mp4', '.mp3', '.wav', '.mov', '.avi'
+    }
+    
+    ext = "." + request.filename.split(".")[-1].lower() if "." in request.filename else ""
+    if ext not in ALLOWED_EXTENSIONS:
+        logger.warning(f"Blocked upload attempt for disallowed file type: {request.filename}")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"File type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+
     try:
         url = generate_upload_url(
             blob_name=blob_name,

@@ -38,9 +38,24 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
         }
     };
 
+    // Extensions matched with backend
+    const ALLOWED_EXTENSIONS = [
+        '.pdf', '.txt', '.md', '.html', '.json',
+        '.jpg', '.jpeg', '.png', '.webp', '.svg',
+        '.mp4', '.mp3', '.wav', '.mov', '.avi'
+    ];
+
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
+            const fileExt = '.' + file.name.split('.').pop()?.toLowerCase();
+
+            if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
+                window.alert("This file is not supported / Este archivo no es compatible");
+                if (fileInputRef.current) fileInputRef.current.value = '';
+                return;
+            }
+
             setFiles((prev) => [...prev, file]);
 
             // Reset input so same file can be selected again if needed
@@ -72,7 +87,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
                 <button
                     className="attach-btn"
                     onClick={() => fileInputRef.current?.click()}
-                    title="Add PDF"
+                    title="Adjuntar archivo (PDF, Texto, Imagen, Video...)"
                     disabled={isLoading}
                 >
                     <ImageIcon size={20} />
@@ -81,7 +96,8 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
                     type="file"
                     ref={fileInputRef}
                     style={{ display: 'none' }}
-                    accept="application/pdf"
+                    // Accept only Vertex AI supported types
+                    accept=".pdf,.txt,.md,.html,.json,.jpg,.jpeg,.png,.webp,.svg,.mp4,.mp3,.wav,.mov,.avi"
                     onChange={handleFileChange}
                 />
 
