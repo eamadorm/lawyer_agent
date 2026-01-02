@@ -1,8 +1,8 @@
-
+import google.auth
 from google.cloud import storage
+from google.auth.transport import requests as google_requests
 from loguru import logger
-from datetime import datetime, timedelta
-from io import BytesIO
+from datetime import timedelta
 
 
 # Create a general storage client
@@ -41,6 +41,12 @@ def generate_upload_url(
     Return:
         str -> Generated url to upload a file in GCS
     """
+    credentials, project_id = google.auth.default()
+    
+    if not credentials.token:
+        request = google_requests.Request()
+        credentials.refresh(request)
+
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
 
@@ -48,7 +54,9 @@ def generate_upload_url(
         version="v4",
         expiration=timedelta(minutes=15), # The url is valid for 15 min only
         method="PUT",
-        content_type=content_type
+        content_type=content_type,
+        service_account_email=credentials.service_account_email,
+        access_token=credentials.token,
     )
     logger.debug(f"Generated upload URL: {url}")
     return url
