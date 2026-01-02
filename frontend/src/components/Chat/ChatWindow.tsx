@@ -28,29 +28,93 @@ export const ChatWindow: React.FC = () => {
     }, []);
 
 
-    const handleSendMessage = async (text: string, attachments: string[]) => {
+    // const API_BASE_URL = 'https://lawyer-agent-api-214571216460.us-central1.run.app';
+    const API_BASE_URL = 'http://localhost:8080';
+
+    const createConversationId = async (): Promise<string> => {
+        const response = await fetch(`${API_BASE_URL}/create_conversation_id`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // Body removed as per backend change
+        });
+
+        if (!response.ok) throw new Error('Failed to create conversation ID');
+        const data = await response.json();
+        return data.conversation_id;
+    };
+
+    const uploadFile = async (file: File, currentConversationId: string): Promise<{ url: string; media_type: string }> => {
+        // Force content-type to application/pdf since we only allow PDFs and sometimes file.type can be empty or different
+        // This ensures consistency between the signature generation and the actual upload
+        const contentType = 'application/pdf';
+
+        // 1. Get Signed URL
+        const uploadUrlRes = await fetch(`${API_BASE_URL}/get_gcs_upload_url`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                filename: file.name,
+                content_type: contentType,
+                user_id: userId,
+                conversation_id: currentConversationId
+            })
+        });
+
+        if (!uploadUrlRes.ok) throw new Error('Failed to get upload URL');
+
+        const { upload_url, gcs_uri } = await uploadUrlRes.json();
+
+        // 2. Upload to GCS
+        const putRes = await fetch(upload_url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': contentType
+            },
+            body: file
+        });
+
+        if (!putRes.ok) throw new Error('Failed to upload file to GCS');
+
+        return { url: gcs_uri, media_type: contentType };
+    };
+
+    const handleSendMessage = async (text: string, files: File[]) => {
         // 1. Add User Message to UI
         const newUserMsg: Message = {
             role: 'user',
             type: 'text',
             content: text,
             timestamp: new Date().toISOString(),
-            attachments: attachments
+            attachments: files.map(f => f.name) // Show filenames
         };
 
         setMessages(prev => [...prev, newUserMsg]);
         setIsLoading(true);
 
         try {
-            // 2. Call API
-            const response = await fetch('https://lawyer-agent-api-214571216460.us-central1.run.app/chat', {
+            // 2. Ensure Conversation ID exists
+            let currentConversationId = conversationId;
+            if (!currentConversationId) {
+                currentConversationId = await createConversationId();
+                setConversationId(currentConversationId);
+            }
+
+            // 3. Upload Files First (if any)
+            const uploadedDocs = [];
+            for (const file of files) {
+                const doc = await uploadFile(file, currentConversationId);
+                uploadedDocs.push(doc);
+            }
+
+            // 4. Call Chat API
+            const response = await fetch(`${API_BASE_URL}/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: text,
                     user_id: userId,
-                    // Use conversational ID if we have it from previous USER interactions, otherwise null
-                    conversation_id: conversationId
+                    conversation_id: currentConversationId,
+                    documents: uploadedDocs
                 })
             });
 
@@ -58,18 +122,12 @@ export const ChatWindow: React.FC = () => {
 
             const data = await response.json();
 
-            // 3. Update Conversation ID if new (Only for user-initiated threads)
-            if (data.conversation_id && data.conversation_id !== conversationId) {
-                setConversationId(data.conversation_id);
-            }
-
-
             // 5. Add Agent Response to UI
             const newAgentMsg: Message = {
                 role: 'agent',
                 type: 'text',
                 content: data.response,
-                charts: data.plotly_charts, // Still storing in message for history if needed, but display is separate
+                charts: data.plotly_charts,
                 timestamp: new Date().toISOString()
             };
 
@@ -96,7 +154,7 @@ export const ChatWindow: React.FC = () => {
 
     return (
         <MainLayout>
-            <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative' }}>
                 {/* Chat Panel - Full Screen */}
                 <div style={{
                     flex: 1,

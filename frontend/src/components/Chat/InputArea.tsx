@@ -3,23 +3,27 @@ import type { ChangeEvent } from 'react';
 import { Send, Image as ImageIcon, X } from 'lucide-react';
 import { Button } from '../UI/Button';
 import './InputArea.css';
+/* Add simple styles for file preview inside the component if css file is not editable or for quick iteration, 
+   but since we are targeting InputArea.tsx we rely on InputArea.css existing. 
+   Assuming the user can see visual changes. We will just use inline styles or existing classes.
+   The previous replacement used generic classes. */
 
 interface InputAreaProps {
-    onSendMessage: (text: string, attachments: string[]) => void;
+    onSendMessage: (text: string, files: File[]) => void;
     isLoading: boolean;
 }
 
 export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }) => {
     const [input, setInput] = useState('');
-    const [attachments, setAttachments] = useState<string[]>([]);
+    const [files, setFiles] = useState<File[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const handleSend = () => {
-        if ((!input.trim() && attachments.length === 0) || isLoading) return;
-        onSendMessage(input, attachments);
+        if ((!input.trim() && files.length === 0) || isLoading) return;
+        onSendMessage(input, files);
         setInput('');
-        setAttachments([]);
+        setFiles([]);
 
         // Reset height
         if (textareaRef.current) {
@@ -37,8 +41,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            const imageUrl = URL.createObjectURL(file);
-            setAttachments((prev) => [...prev, imageUrl]);
+            setFiles((prev) => [...prev, file]);
 
             // Reset input so same file can be selected again if needed
             if (fileInputRef.current) fileInputRef.current.value = '';
@@ -46,17 +49,17 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
     };
 
     const removeAttachment = (index: number) => {
-        setAttachments((prev) => prev.filter((_, i) => i !== index));
-        // Note: In a real app involving object URLs, we should revokeObjectURL to avoid leaks.
+        setFiles((prev) => prev.filter((_, i) => i !== index));
     };
 
     return (
         <div className="input-area-container">
-            {attachments.length > 0 && (
+            {files.length > 0 && (
                 <div className="attachment-preview-bar">
-                    {attachments.map((url, idx) => (
-                        <div key={idx} className="preview-item">
-                            <img src={url} alt="preview" />
+                    {files.map((file, idx) => (
+                        <div key={idx} className="preview-item file-preview">
+                            <span className="file-icon">📄</span>
+                            <span className="file-name">{file.name}</span>
                             <button className="remove-btn" onClick={() => removeAttachment(idx)}>
                                 <X size={14} />
                             </button>
@@ -69,7 +72,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
                 <button
                     className="attach-btn"
                     onClick={() => fileInputRef.current?.click()}
-                    title="Add image"
+                    title="Add PDF"
                     disabled={isLoading}
                 >
                     <ImageIcon size={20} />
@@ -78,7 +81,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
                     type="file"
                     ref={fileInputRef}
                     style={{ display: 'none' }}
-                    accept="image/*"
+                    accept="application/pdf"
                     onChange={handleFileChange}
                 />
 
@@ -101,7 +104,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
                 <Button
                     className="send-btn"
                     onClick={handleSend}
-                    disabled={(!input.trim() && attachments.length === 0) || isLoading}
+                    disabled={(!input.trim() && files.length === 0) || isLoading}
                     size="sm"
                 >
                     <Send size={18} />
