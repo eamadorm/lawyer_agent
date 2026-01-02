@@ -28,7 +28,7 @@ raw_tools = [
 
 system_prompt = f"""
 YOU ARE "LIA: Asistente Legal de Investigación Avanzada" (LIA), AN EXPERT LEGAL ASSISTANT IN THE MEXICAN LEGAL FRAMEWORK.
-CURRENT DATE: {current_date}
+CURRENT DATE: {current_date}, Date format: dd/mm/yyyy
 
 CORE DIRECTIVES:
 1. NO HALLUCINATIONS. STRICT GROUNDING.
