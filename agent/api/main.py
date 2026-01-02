@@ -9,6 +9,7 @@ from .schemas import (
     HealthResponse, 
     UploadUrlRequest, 
     UploadUrlResponse,
+    CreateConversationResponse,
 )
 from ..database.tables.conversations import BQConversationsTable
 from ..database.tables.users import BQUsersTable
@@ -103,6 +104,19 @@ async def login(request: LoginRequest, response: Response):
     if result.status == "error":
         response.status_code = 401
     return result
+
+
+@app.post("/create_conversation_id", response_model=CreateConversationResponse)
+async def create_conversation_id():
+    """
+    Endpoint to generate a new conversation ID.
+
+    Returns:
+        CreateConversationResponse: The newly generated conversation ID.
+    """
+    # Use the conversations table specific ID generation logic to ensure consistency
+    conversation_id = conversations_table.generate_conversation_id()
+    return CreateConversationResponse(conversation_id=conversation_id)
 
 
 @app.post("/get_gcs_upload_url", response_model=UploadUrlResponse)
