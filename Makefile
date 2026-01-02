@@ -82,3 +82,34 @@ schedule-dof-pipeline:
 	--http-method=GET \
 	--uri=https://us-central1-learned-stone-454021-c8.cloudfunctions.net/dof-scraper-function \
 	--oidc-service-account-email=dof-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com
+
+# --- FEDERAL LAWS PIPELINE ---
+
+test-federal-laws-pipeline:
+	uv run --group federal_laws -m pipelines.federal_laws.main
+
+deploy-federal-laws-pipeline:
+	uv export --group federal_laws --no-hashes --format requirements-txt > pipelines/federal_laws/requirements.txt
+	gcloud functions deploy federal-laws-scraper-function \
+	--gen2 \
+	--runtime=python312 \
+	--region=$(DOF_PIPELINE_REGION) \
+	--source=pipelines/federal_laws \
+	--entry-point=federal_laws_scraper_function \
+	--trigger-http \
+	--timeout=3600s \
+	--memory=4096MB \
+	--max-instances=3 \
+	--set-env-vars=PROJECT_ID=$(PROJECT_ID) \
+	--no-allow-unauthenticated \
+	--service-account=federal-laws-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com
+	rm pipelines/federal_laws/requirements.txt
+
+schedule-federal-laws-pipeline:
+	gcloud scheduler jobs create http federal-laws-scraper-job \
+	--location=$(DOF_PIPELINE_REGION) \
+	--schedule="0 9 * * *" \
+	--time-zone="America/Mexico_City" \
+	--http-method=GET \
+	--uri=https://us-central1-learned-stone-454021-c8.cloudfunctions.net/federal-laws-scraper-function \
+	--oidc-service-account-email=federal-laws-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com

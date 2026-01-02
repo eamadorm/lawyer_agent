@@ -42,4 +42,9 @@ federal_laws = [
     "beautifulsoup4>=4.12.3",
     "ipykernel>=6.29.0",
     "openpyxl>=3.1.2",
+    "functions-framework>=3.8.2",
+    "flask>=3.1.0",
+    "loguru>=0.7.2",
+    "google-cloud-storage>=3.1.0",
+    "pydantic-settings>=2.7.0",
 ]
