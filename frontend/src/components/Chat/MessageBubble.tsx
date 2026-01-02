@@ -77,12 +77,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
-                                    backgroundColor: isAgent ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.15)',
+                                    backgroundColor: isAgent ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
                                     padding: '6px 10px',
                                     borderRadius: '6px',
-                                    border: isAgent ? '1px solid rgba(0,0,0,0.1)' : '1px solid rgba(255, 255, 255, 0.2)',
+                                    border: isAgent ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(0, 0, 0, 0.1)',
                                     fontSize: '0.85rem',
-                                    color: isAgent ? '#334155' : '#f1f5f9',
+                                    color: isAgent ? '#f1f5f9' : '#1e293b', // Agent (Dark BG) -> Light Text; User (Light BG) -> Dark Text
                                     maxWidth: '100%'
                                 }} title={fileName}>
                                     <span style={{ opacity: 0.8 }}>{getFileIcon(fileName)}</span>
