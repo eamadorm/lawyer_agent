@@ -1,13 +1,25 @@
-import uvicorn
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from pydantic_core import to_jsonable_python
 
-from .schemas import ChatRequest, ChatResponse, HealthResponse
+from .schemas import (
+    ChatRequest, 
+    ChatResponse, 
+    HealthResponse, 
+    UploadUrlRequest, 
+    UploadUrlResponse,
+)
 from ..database.tables.conversations import BQConversationsTable
 from ..database.tables.users import BQUsersTable
-from ..database.schemas import ConversationsRequest, UserRecord, AgentRecord, CreateUserRequest, UserResponse, LoginRequest
+from ..database.schemas import (
+    ConversationsRequest, 
+    UserRecord, 
+    AgentRecord, 
+    CreateUserRequest, 
+    UserResponse, 
+    LoginRequest,
+)
 from ..main import agent 
 from ..config import AgentConfig, ModelArmorConfig
 from ..security import ModelArmorGuard
@@ -15,6 +27,8 @@ from .auxiliars import (
     extract_query_results,
     prepare_to_read_chat_history,
 )
+from .gcs_utils import generate_upload_url
+
 
 app = FastAPI(
     title="Lawyer Agent API",
@@ -89,6 +103,37 @@ async def login(request: LoginRequest, response: Response):
     if result.status == "error":
         response.status_code = 401
     return result
+
+
+@app.post("/get_gcs_upload_url", response_model=UploadUrlResponse)
+async def get_gcs_upload_url(request: UploadUrlRequest):
+    """
+    Generates a Signed URL for direct file upload to GCS.
+
+    Args:
+        request (UploadUrlRequest): The request containing user_id, conversation_id, and filename.
+
+    Returns:
+        UploadUrlResponse: The response containing the generated upload URL and GCS URI.
+    """
+    BUCKET_NAME = "lawyer_agent"
+    # Path structure: user_documents/<user_id>/<conversation_id>/<filename>
+    blob_name = f"user_documents/{request.user_id}/{request.conversation_id}/{request.filename}"
+
+    try:
+        url = generate_upload_url(
+            blob_name=blob_name,
+            bucket_name=BUCKET_NAME,
+            content_type=request.content_type
+        )
+        
+        return UploadUrlResponse(
+            upload_url=url,
+            gcs_uri=f"gs://{BUCKET_NAME}/{blob_name}"
+        )
+    except Exception as e:
+        logger.error(f"Error generating signed URL: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/chat", response_model=ChatResponse)
