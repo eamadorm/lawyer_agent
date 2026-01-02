@@ -19,7 +19,7 @@ The pipeline is implemented as a Google Cloud Run Function (2nd Gen) that:
 
 For the Cloud Scheduler job to successfully trigger the Cloud Function, the service account used by the scheduler must have the appropriate permissions.
 
-**Service Account**: `dof-pipeline@learned-stone-454021-c8.iam.gserviceaccount.com`
+**Service Account**: `dof-pipeline@<project-id>.iam.gserviceaccount.com`
 
 **Required Roles**:
 -   `roles/run.invoker`
