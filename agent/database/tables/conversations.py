@@ -51,7 +51,8 @@ class BQConversationsTable(BigQueryTable):
     def _generate_prompt_id(self, conversation_id: str) -> str:
         """
         Generates a new prompt id (Stateful/Incremental).
-        Format: <conversation_id>-00000001
+        Format: PID<10_char_hash><00000001>
+        Example: PIDa1b2c3d4e500000001
 
         Args:
             conversation_id (str): The conversation ID.
@@ -59,6 +60,9 @@ class BQConversationsTable(BigQueryTable):
         Returns:
             str: Generated prompt ID.
         """
+        # Create a stable 10-char hash from conversation_id
+        short_hash = hashlib.sha256(conversation_id.encode()).hexdigest()[:10]
+
         query = f"""
                 select
                     max(prompt_id) as max_prompt_id
@@ -72,9 +76,11 @@ class BQConversationsTable(BigQueryTable):
         if not max_id_row or not max_id_row.max_prompt_id:
             next_prompt_id = 1
         else:
+            # Format is PID<10_char_hash><8_digits>
+            # We take the last 8 chars for the incremental part
             next_prompt_id = int(max_id_row.max_prompt_id[-8:]) + 1
 
-        return f"{conversation_id}P{next_prompt_id:08d}"
+        return f"PID{short_hash}{next_prompt_id:08d}"
 
     def _insert_row(self, request: ConversationsRequest) -> None:
         """
