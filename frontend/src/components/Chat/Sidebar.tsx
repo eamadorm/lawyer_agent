@@ -42,7 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         };
 
         fetchConversations();
-    }, [userId, currentConversationId, lastUpdated]); // Refresh when conversation changes or lastUpdated trigger
+    }, [userId, lastUpdated]); // Refresh only when user changes or lastUpdated trigger
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
