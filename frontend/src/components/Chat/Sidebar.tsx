@@ -11,7 +11,7 @@ interface SidebarProps {
     lastUpdated?: number;
 }
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'https://lawyer-agent-api-214571216460.us-central1.run.app';
 
 export const Sidebar: React.FC<SidebarProps> = ({
     userId,

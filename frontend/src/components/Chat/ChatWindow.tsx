@@ -35,9 +35,7 @@ export const ChatWindow: React.FC = () => {
     }, [conversationId]);
 
 
-    // const API_BASE_URL = 'https://lawyer-agent-api-214571216460.us-central1.run.app';
-    // Use the production Cloud Run URL
-    const API_BASE_URL = 'http://localhost:8080'; // 'https://lawyer-agent-api-214571216460.us-central1.run.app';
+    const API_BASE_URL = 'https://lawyer-agent-api-214571216460.us-central1.run.app';
 
     const createConversationId = async (): Promise<string> => {
         const response = await fetch(`${API_BASE_URL}/create_conversation_id`, {
