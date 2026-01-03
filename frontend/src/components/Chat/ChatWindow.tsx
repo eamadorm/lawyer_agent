@@ -4,7 +4,7 @@ import { MessageList } from './MessageList';
 import { InputArea } from './InputArea';
 import { Sidebar } from './Sidebar';
 import type { Message, ConversationMessage } from '../../types/chat';
-import { LogOut } from 'lucide-react';
+import { LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const ChatWindow: React.FC = () => {
@@ -16,6 +16,7 @@ export const ChatWindow: React.FC = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(Date.now());
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const userId = localStorage.getItem('user_id') || 'anonymous';
 
     // Initial Welcome Message (Static)
@@ -196,13 +197,15 @@ export const ChatWindow: React.FC = () => {
     return (
         <MainLayout>
             <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative' }}>
-                <Sidebar
-                    userId={userId}
-                    onSelectConversation={handleSelectConversation}
-                    onNewChat={handleNewChat}
-                    currentConversationId={conversationId}
-                    lastUpdated={lastUpdated}
-                />
+                <div style={{ display: isSidebarOpen ? 'block' : 'none', height: '100%' }}>
+                    <Sidebar
+                        userId={userId}
+                        onSelectConversation={handleSelectConversation}
+                        onNewChat={handleNewChat}
+                        currentConversationId={conversationId}
+                        lastUpdated={lastUpdated}
+                    />
+                </div>
                 {/* Chat Panel - Full Screen */}
                 <div style={{
                     flex: 1,
@@ -225,15 +228,31 @@ export const ChatWindow: React.FC = () => {
                         alignItems: 'center',
                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
                     }}>
-                        <h2 style={{
-                            margin: 0,
-                            color: 'white',
-                            fontSize: '1.1rem', // Reduced from 1.25rem
-                            fontFamily: "'Montserrat', sans-serif",
-                            fontStyle: 'italic',
-                            fontWeight: 400, // Removed bold
-                            letterSpacing: '0.05em'
-                        }}>LIA: Asistente Legal de Investigación Avanzada</h2>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <button
+                                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: 'white',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <Menu size={24} />
+                            </button>
+                            <h2 style={{
+                                margin: 0,
+                                color: 'white',
+                                fontSize: '1.1rem', // Reduced from 1.25rem
+                                fontFamily: "'Montserrat', sans-serif",
+                                fontStyle: 'italic',
+                                fontWeight: 400, // Removed bold
+                                letterSpacing: '0.05em'
+                            }}>LIA: Asistente Legal de Investigación Avanzada</h2>
+                        </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                             {conversationId && (
