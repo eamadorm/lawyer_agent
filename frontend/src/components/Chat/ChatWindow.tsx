@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { MainLayout } from '../Layout/MainLayout';
 import { MessageList } from './MessageList';
 import { InputArea } from './InputArea';
-import type { Message } from '../../types/chat';
+import { Sidebar } from './Sidebar';
+import type { Message, ConversationMessage } from '../../types/chat';
 import { LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,15 +18,19 @@ export const ChatWindow: React.FC = () => {
     const userId = localStorage.getItem('user_id') || 'anonymous';
 
     // Initial Welcome Message (Static)
+    const welcomeMsg: Message = {
+        role: 'agent',
+        type: 'text',
+        content: "¡Hola! Soy LIA (Asistente Legal de Investigación Avanzada).\n\nEstoy aquí para ayudarte a navegar el marco legal mexicano con información precisa y verificada.\n\n¿En qué puedo ayudarte hoy?",
+        timestamp: new Date().toISOString()
+    };
+
     React.useEffect(() => {
-        const welcomeMsg: Message = {
-            role: 'agent',
-            type: 'text',
-            content: "¡Hola! Soy LIA (Asistente Legal de Investigación Avanzada).\n\nEstoy aquí para ayudarte a navegar el marco legal mexicano con información precisa y verificada.\n\n¿En qué puedo ayudarte hoy?",
-            timestamp: new Date().toISOString()
-        };
-        setMessages([welcomeMsg]);
-    }, []);
+        // Only set welcome message if no conversation is selected
+        if (!conversationId) {
+            setMessages([welcomeMsg]);
+        }
+    }, [conversationId]);
 
 
     // const API_BASE_URL = 'https://lawyer-agent-api-214571216460.us-central1.run.app';
@@ -149,6 +154,36 @@ export const ChatWindow: React.FC = () => {
         }
     };
 
+    const handleSelectConversation = async (convId: string) => {
+        setConversationId(convId);
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/conversations/${convId}/messages`);
+            if (response.ok) {
+                const data: ConversationMessage[] = await response.json();
+
+                // Transform backend messages to frontend format
+                const uiMessages: Message[] = data.map(msg => ({
+                    role: msg.role === 'user' ? 'user' : 'agent',
+                    type: 'text',
+                    content: msg.content,
+                    timestamp: msg.created_at
+                }));
+
+                setMessages(uiMessages);
+            }
+        } catch (error) {
+            console.error("Error loading conversation:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleNewChat = () => {
+        setConversationId(null);
+        setMessages([welcomeMsg]);
+    };
+
     const handleLogout = () => {
         localStorage.removeItem('user_id');
         navigate('/');
@@ -157,6 +192,12 @@ export const ChatWindow: React.FC = () => {
     return (
         <MainLayout>
             <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative' }}>
+                <Sidebar
+                    userId={userId}
+                    onSelectConversation={handleSelectConversation}
+                    onNewChat={handleNewChat}
+                    currentConversationId={conversationId}
+                />
                 {/* Chat Panel - Full Screen */}
                 <div style={{
                     flex: 1,
