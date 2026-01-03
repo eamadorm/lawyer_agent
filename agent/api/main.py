@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from pydantic_core import to_jsonable_python
 from pydantic_ai import DocumentUrl
+import mimetypes
 
 from .schemas import (
     ChatRequest, 
@@ -212,7 +213,13 @@ async def chat(request: ChatRequest):
             logger.info(f"Attaching {len(request.documents)} documents to the prompt.")
             for doc in request.documents:
                 # Use pydantic_ai.DocumentUrl as requested
-                agent_input.append(DocumentUrl(url=doc.gcs_uri))
+                media_type, _ = mimetypes.guess_type(doc.gcs_uri)
+                if media_type:
+                    logger.debug(f"Attaching document with media_type: {media_type}")
+                    agent_input.append(DocumentUrl(url=doc.gcs_uri, media_type=media_type))
+                else:
+                    logger.warning(f"Could not determine media_type for {doc.gcs_uri}, sending without it.")
+                    agent_input.append(DocumentUrl(url=doc.gcs_uri))
 
         # 4. Run Agent
         logger.info(f"Running agent for conversation ID: {conversation_id}")
