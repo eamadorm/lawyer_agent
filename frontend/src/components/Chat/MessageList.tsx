@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { Loader2 } from 'lucide-react';
 import type { Message } from '../../types/chat';
 import { MessageBubble } from './MessageBubble';
 import './MessageList.css';
@@ -24,10 +25,8 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, isLoading })
 
             {isLoading && (
                 <div className="loading-indicator">
-                    <span>Thinking...</span>
-                    <div className="dots">
-                        <span>.</span><span>.</span><span>.</span>
-                    </div>
+                    <Loader2 className="spinner" size={16} />
+                    <span>Pensando...</span>
                 </div>
             )}
 
