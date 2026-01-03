@@ -1,6 +1,6 @@
 from .bq_base_table import BigQueryTable
 from ..config import DBConfig
-from ..schemas import ConversationsRequest
+from ..schemas import ConversationsRequest, UserConversation
 from ..bq_utils import query_data, insert_rows_from_json
 from loguru import logger
 from datetime import datetime, timezone
@@ -195,15 +195,15 @@ class BQConversationsTable(BigQueryTable):
 
         return full_history
 
-    def get_user_conversations(self, user_id: str) -> list[str]:
+    def get_user_conversations(self, user_id: str) -> list[UserConversation]:
         """
-        Retrieves the list of conversation_ids of a user.
+        Retrieves the list of conversations of a user.
 
         Args:
             user_id (str): Id of the user.
 
         Returns:
-             list[str]: List of conversation_ids.
+             list[UserConversation]: List of conversations.
         """
         query = f"""
                 select
@@ -218,6 +218,11 @@ class BQConversationsTable(BigQueryTable):
 
         row_iterator = query_data(query=query)
 
-        conversation_ids = [row.conversation_id for row in row_iterator]
+        conversations = [
+            UserConversation(
+                conversation_id=row.conversation_id,
+                conversation_created_at=row.conversation_created_at
+            ) for row in row_iterator
+        ]
 
-        return conversation_ids
+        return conversations

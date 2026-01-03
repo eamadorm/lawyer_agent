@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field, field_validator, BeforeValidator, AfterValidator
+from pydantic import BaseModel, Field, BeforeValidator, AfterValidator
 import hashlib
 import re
 from typing import Annotated, Optional, Literal
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from pydantic.functional_serializers import PlainSerializer
 
 
@@ -167,6 +168,24 @@ class ConversationsRequest(BaseModel):
         ),
         PlainSerializer(  # Tells pydantic when serializing (converting to a dict or a json string), use the function
             lambda dt: dt.strftime(r"%Y-%m-%d %H:%M:%S"),
+            when_used="always",
+        ),
+    ]
+
+
+class UserConversation(BaseModel):
+    """
+    Model representing a conversation summary.
+    """
+    conversation_id: Annotated[
+        str,
+        Field(description="ID of the conversation"),
+    ]
+    conversation_created_at: Annotated[
+        datetime,
+        Field(description="Creation time of the conversation"),
+        PlainSerializer(
+            lambda dt: dt.replace(tzinfo=timezone.utc).astimezone(ZoneInfo("America/Mexico_City")).strftime(r"%Y-%m-%d %H:%M:%S") if dt.tzinfo is None else dt.astimezone(ZoneInfo("America/Mexico_City")).strftime(r"%Y-%m-%d %H:%M:%S"),
             when_used="always",
         ),
     ]
