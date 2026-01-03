@@ -22,10 +22,13 @@ class BQConversationsTable(BigQueryTable):
     def primary_key(self) -> str:
         return self.__primary_key
 
-    def _generate_id(self) -> str:
+    def _generate_id(self, user_id: str) -> str:
         """
         Generates a unique Conversation ID.
         Format: CONV-<20_char_hash>
+
+        Args:
+            user_id (str): The ID of the user.
 
         Returns:
             str: Generated unique ID.
@@ -33,7 +36,9 @@ class BQConversationsTable(BigQueryTable):
         now = datetime.now(timezone.utc)
         timestamp = now.strftime("%Y%m%d%H%M%S%f")
         random_salt = secrets.token_hex(4)
-        data = f"{timestamp}{random_salt}".encode()
+        
+        # Include user_id in the data to ensure uniqueness across users
+        data = f"{user_id}{timestamp}{random_salt}".encode()
 
         # Create SHA256 hash
         sha_hash = hashlib.sha256(data).hexdigest()
@@ -97,8 +102,8 @@ class BQConversationsTable(BigQueryTable):
                 f"Error while inserting chat session's data into BigQuery: {e}"
             )
 
-    def generate_conversation_id(self):
-        return self._generate_id()
+    def generate_conversation_id(self, user_id: str):
+        return self._generate_id(user_id)
 
 
     def add_row(self, request: ConversationsRequest) -> str:
@@ -115,19 +120,17 @@ class BQConversationsTable(BigQueryTable):
         Returns:
             str: Id of the conversation.
         """
-        logger.debug(
-            f"Searching for conversation_id {request.conversation_id} in table {self.name}..."
-        )
+        logger.debug(f"Searching for conversation_id {request.conversation_id} in table {self.name}...")
         # Generating a conversation_id if not provided
         if not request.conversation_id:
-            logger.debug(
-                f"Conversation_id not found. Generating new one."
-            )
-            request.conversation_id = self.generate_conversation_id()
+            logger.debug("Conversation_id not found. Generating new one.")
+            # Ensure we have a user_id to generate the conversation_id
+            if not request.user or not request.user.id:
+                raise ValueError("User ID is required to generate a conversation ID.")
+            
+            request.conversation_id = self.generate_conversation_id(request.user.id)
 
-        logger.debug(
-            f"Generating prompt_id for conversation_id {request.conversation_id}..."
-        )
+        logger.debug(f"Generating prompt_id for conversation_id {request.conversation_id}...")
         request.prompt_id = self._generate_prompt_id(request.conversation_id)
 
         logger.debug(f"Adding row to the {self.name} table...")
@@ -185,3 +188,30 @@ class BQConversationsTable(BigQueryTable):
         full_history = next(row_iterator).full_history
 
         return full_history
+
+    def get_user_conversations(self, user_id: str) -> list[str]:
+        """
+        Retrieves the list of conversation_ids of a user.
+
+        Args:
+            user_id (str): Id of the user.
+
+        Returns:
+             list[str]: List of conversation_ids.
+        """
+        query = f"""
+                select
+                    conversation_id,
+                    min(prompt_created_at) as conversation_created_at
+            
+                from `{self.project_id}.{self.dataset_id}.{self.name}`
+                where user.id = '{user_id}'
+                group by 1
+                order by 2 desc
+                """
+
+        row_iterator = query_data(query=query)
+
+        conversation_ids = [row.conversation_id for row in row_iterator]
+
+        return conversation_ids

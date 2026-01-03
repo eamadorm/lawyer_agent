@@ -13,6 +13,7 @@ from .schemas import (
     UploadUrlRequest, 
     UploadUrlResponse,
     CreateConversationResponse,
+    CreateConversationRequest,
 )
 from ..database.tables.conversations import BQConversationsTable
 from ..database.tables.users import BQUsersTable
@@ -110,15 +111,18 @@ async def login(request: LoginRequest, response: Response):
 
 
 @app.post("/create_conversation_id", response_model=CreateConversationResponse)
-async def create_conversation_id():
+async def create_conversation_id(request: CreateConversationRequest):
     """
     Endpoint to generate a new conversation ID.
+
+    Args:
+        request (CreateConversationRequest): The request containing the user_id.
 
     Returns:
         CreateConversationResponse: The newly generated conversation ID.
     """
     # Use the conversations table specific ID generation logic to ensure consistency
-    conversation_id = conversations_table.generate_conversation_id()
+    conversation_id = conversations_table.generate_conversation_id(request.user_id)
     return CreateConversationResponse(conversation_id=conversation_id)
 
 

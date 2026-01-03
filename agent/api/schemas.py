@@ -28,6 +28,10 @@ class UploadUrlResponse(BaseModel):
     upload_url: Annotated[str, Field(description="The signed URL for direct upload.")]
     gcs_uri: Annotated[str, Field(description="The final GCS URI of the uploaded file.")]
 
+class CreateConversationRequest(BaseModel):
+    user_id: Annotated[str, Field(description="The unique identifier for the user who is creating the conversation.")]
+
+
 class CreateConversationResponse(BaseModel):
     conversation_id: Annotated[str, Field(description="The unique identifier for the new conversation.")]
 
