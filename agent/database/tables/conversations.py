@@ -1,6 +1,6 @@
 from .bq_base_table import BigQueryTable
 from ..config import DBConfig
-from ..schemas import ConversationsRequest
+from ..schemas import ConversationsRequest, UserConversation, ConversationMessage
 from ..bq_utils import query_data, insert_rows_from_json
 from loguru import logger
 from datetime import datetime, timezone
@@ -22,10 +22,13 @@ class BQConversationsTable(BigQueryTable):
     def primary_key(self) -> str:
         return self.__primary_key
 
-    def _generate_id(self) -> str:
+    def _generate_id(self, user_id: str) -> str:
         """
         Generates a unique Conversation ID.
         Format: CONV-<20_char_hash>
+
+        Args:
+            user_id (str): The ID of the user.
 
         Returns:
             str: Generated unique ID.
@@ -33,7 +36,9 @@ class BQConversationsTable(BigQueryTable):
         now = datetime.now(timezone.utc)
         timestamp = now.strftime("%Y%m%d%H%M%S%f")
         random_salt = secrets.token_hex(4)
-        data = f"{timestamp}{random_salt}".encode()
+        
+        # Include user_id in the data to ensure uniqueness across users
+        data = f"{user_id}{timestamp}{random_salt}".encode()
 
         # Create SHA256 hash
         sha_hash = hashlib.sha256(data).hexdigest()
@@ -46,7 +51,8 @@ class BQConversationsTable(BigQueryTable):
     def _generate_prompt_id(self, conversation_id: str) -> str:
         """
         Generates a new prompt id (Stateful/Incremental).
-        Format: <conversation_id>-00000001
+        Format: PID<10_char_hash><00000001>
+        Example: PIDa1b2c3d4e500000001
 
         Args:
             conversation_id (str): The conversation ID.
@@ -54,6 +60,9 @@ class BQConversationsTable(BigQueryTable):
         Returns:
             str: Generated prompt ID.
         """
+        # Create a stable 10-char hash from conversation_id
+        short_hash = hashlib.sha256(conversation_id.encode()).hexdigest()[:10]
+
         query = f"""
                 select
                     max(prompt_id) as max_prompt_id
@@ -67,9 +76,11 @@ class BQConversationsTable(BigQueryTable):
         if not max_id_row or not max_id_row.max_prompt_id:
             next_prompt_id = 1
         else:
+            # Format is PID<10_char_hash><8_digits>
+            # We take the last 8 chars for the incremental part
             next_prompt_id = int(max_id_row.max_prompt_id[-8:]) + 1
 
-        return f"{conversation_id}P{next_prompt_id:08d}"
+        return f"PID{short_hash}{next_prompt_id:08d}"
 
     def _insert_row(self, request: ConversationsRequest) -> None:
         """
@@ -97,8 +108,8 @@ class BQConversationsTable(BigQueryTable):
                 f"Error while inserting chat session's data into BigQuery: {e}"
             )
 
-    def generate_conversation_id(self):
-        return self._generate_id()
+    def generate_conversation_id(self, user_id: str):
+        return self._generate_id(user_id)
 
 
     def add_row(self, request: ConversationsRequest) -> str:
@@ -115,19 +126,17 @@ class BQConversationsTable(BigQueryTable):
         Returns:
             str: Id of the conversation.
         """
-        logger.debug(
-            f"Searching for conversation_id {request.conversation_id} in table {self.name}..."
-        )
+        logger.debug(f"Searching for conversation_id {request.conversation_id} in table {self.name}...")
         # Generating a conversation_id if not provided
         if not request.conversation_id:
-            logger.debug(
-                f"Conversation_id not found. Generating new one."
-            )
-            request.conversation_id = self.generate_conversation_id()
+            logger.debug("Conversation_id not found. Generating new one.")
+            # Ensure we have a user_id to generate the conversation_id
+            if not request.user or not request.user.id:
+                raise ValueError("User ID is required to generate a conversation ID.")
+            
+            request.conversation_id = self.generate_conversation_id(request.user.id)
 
-        logger.debug(
-            f"Generating prompt_id for conversation_id {request.conversation_id}..."
-        )
+        logger.debug(f"Generating prompt_id for conversation_id {request.conversation_id}...")
         request.prompt_id = self._generate_prompt_id(request.conversation_id)
 
         logger.debug(f"Adding row to the {self.name} table...")
@@ -185,3 +194,79 @@ class BQConversationsTable(BigQueryTable):
         full_history = next(row_iterator).full_history
 
         return full_history
+
+    def get_user_conversations(self, user_id: str) -> list[UserConversation]:
+        """
+        Retrieves the list of conversations of a user.
+
+        Args:
+            user_id (str): Id of the user.
+
+        Returns:
+             list[UserConversation]: List of conversations.
+        """
+        query = f"""
+                select
+                    conversation_id,
+                    min(prompt_created_at) as conversation_created_at
+            
+                from `{self.project_id}.{self.dataset_id}.{self.name}`
+                where user.id = '{user_id}'
+                group by 1
+                order by 2 desc
+                """
+
+        row_iterator = query_data(query=query)
+
+        conversations = [
+            UserConversation(
+                conversation_id=row.conversation_id,
+                conversation_created_at=row.conversation_created_at
+            ) for row in row_iterator
+        ]
+
+        return conversations
+
+    def get_conversation_messages(self, conversation_id: str) -> list[ConversationMessage]:
+        """
+        Retrieves the simplified conversation messages (User/Agent pairs) for UI display.
+        
+        Args:
+            conversation_id (str): Id of the conversation.
+            
+        Returns:
+            list[ConversationMessage]: List of conversation messages sorted by time.
+        """
+        query = f"""
+                select
+                    user.prompt as user_content,
+                    agent.response as agent_content,
+                    prompt_created_at
+            
+                from `{self.project_id}.{self.dataset_id}.{self.name}`
+                where conversation_id = '{conversation_id}'
+                order by prompt_created_at asc
+                """
+
+        row_iterator = query_data(query=query)
+
+        messages = []
+        for row in row_iterator:
+            # Add User Message
+            messages.append(
+                ConversationMessage(
+                    role="user",
+                    content=row.user_content,
+                    created_at=row.prompt_created_at
+                )
+            )
+            # Add Agent Message
+            messages.append(
+                ConversationMessage(
+                    role="model",
+                    content=row.agent_content,
+                    created_at=row.prompt_created_at
+                )
+            )
+
+        return messages

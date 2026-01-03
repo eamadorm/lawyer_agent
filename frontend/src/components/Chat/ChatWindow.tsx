@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { MainLayout } from '../Layout/MainLayout';
 import { MessageList } from './MessageList';
 import { InputArea } from './InputArea';
-import type { Message } from '../../types/chat';
-import { LogOut } from 'lucide-react';
+import { Sidebar } from './Sidebar';
+import type { Message, ConversationMessage } from '../../types/chat';
+import { LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const ChatWindow: React.FC = () => {
@@ -14,29 +15,33 @@ export const ChatWindow: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [lastUpdated, setLastUpdated] = useState(Date.now());
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const userId = localStorage.getItem('user_id') || 'anonymous';
 
     // Initial Welcome Message (Static)
+    const welcomeMsg: Message = {
+        role: 'agent',
+        type: 'text',
+        content: "¡Hola! Soy LIA (Asistente Legal de Investigación Avanzada).\n\nEstoy aquí para ayudarte a navegar el marco legal mexicano con información precisa y verificada.\n\n¿En qué puedo ayudarte hoy?",
+        timestamp: new Date().toISOString()
+    };
+
     React.useEffect(() => {
-        const welcomeMsg: Message = {
-            role: 'agent',
-            type: 'text',
-            content: "¡Hola! Soy LIA (Asistente Legal de Investigación Avanzada).\n\nEstoy aquí para ayudarte a navegar el marco legal mexicano con información precisa y verificada.\n\n¿En qué puedo ayudarte hoy?",
-            timestamp: new Date().toISOString()
-        };
-        setMessages([welcomeMsg]);
-    }, []);
+        // Only set welcome message if no conversation is selected
+        if (!conversationId) {
+            setMessages([welcomeMsg]);
+        }
+    }, [conversationId]);
 
 
-    // const API_BASE_URL = 'https://lawyer-agent-api-214571216460.us-central1.run.app';
-    // Use the production Cloud Run URL
     const API_BASE_URL = 'https://lawyer-agent-api-214571216460.us-central1.run.app';
 
     const createConversationId = async (): Promise<string> => {
         const response = await fetch(`${API_BASE_URL}/create_conversation_id`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // Body removed as per backend change
+            body: JSON.stringify({ user_id: userId })
         });
 
         if (!response.ok) throw new Error('Failed to create conversation ID');
@@ -135,6 +140,9 @@ export const ChatWindow: React.FC = () => {
 
             setMessages(prev => [...prev, newAgentMsg]);
 
+            // Trigger refresh of sidebar since conversation is now saved/updated in DB
+            setLastUpdated(Date.now());
+
         } catch (error) {
             console.error(error);
             const errorMsg: Message = {
@@ -149,6 +157,36 @@ export const ChatWindow: React.FC = () => {
         }
     };
 
+    const handleSelectConversation = async (convId: string) => {
+        setConversationId(convId);
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/conversations/${convId}/messages`);
+            if (response.ok) {
+                const data: ConversationMessage[] = await response.json();
+
+                // Transform backend messages to frontend format
+                const uiMessages: Message[] = data.map(msg => ({
+                    role: msg.role === 'user' ? 'user' : 'agent',
+                    type: 'text',
+                    content: msg.content,
+                    timestamp: msg.created_at
+                }));
+
+                setMessages(uiMessages);
+            }
+        } catch (error) {
+            console.error("Error loading conversation:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleNewChat = () => {
+        setConversationId(null);
+        setMessages([welcomeMsg]);
+    };
+
     const handleLogout = () => {
         localStorage.removeItem('user_id');
         navigate('/');
@@ -157,6 +195,15 @@ export const ChatWindow: React.FC = () => {
     return (
         <MainLayout>
             <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative' }}>
+                <div style={{ display: isSidebarOpen ? 'block' : 'none', height: '100%' }}>
+                    <Sidebar
+                        userId={userId}
+                        onSelectConversation={handleSelectConversation}
+                        onNewChat={handleNewChat}
+                        currentConversationId={conversationId}
+                        lastUpdated={lastUpdated}
+                    />
+                </div>
                 {/* Chat Panel - Full Screen */}
                 <div style={{
                     flex: 1,
@@ -179,15 +226,31 @@ export const ChatWindow: React.FC = () => {
                         alignItems: 'center',
                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
                     }}>
-                        <h2 style={{
-                            margin: 0,
-                            color: 'white',
-                            fontSize: '1.1rem', // Reduced from 1.25rem
-                            fontFamily: "'Montserrat', sans-serif",
-                            fontStyle: 'italic',
-                            fontWeight: 400, // Removed bold
-                            letterSpacing: '0.05em'
-                        }}>LIA: Asistente Legal de Investigación Avanzada</h2>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <button
+                                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: 'white',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <Menu size={24} />
+                            </button>
+                            <h2 style={{
+                                margin: 0,
+                                color: 'white',
+                                fontSize: '1.1rem', // Reduced from 1.25rem
+                                fontFamily: "'Montserrat', sans-serif",
+                                fontStyle: 'italic',
+                                fontWeight: 400, // Removed bold
+                                letterSpacing: '0.05em'
+                            }}>LIA: Asistente Legal de Investigación Avanzada</h2>
+                        </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                             {conversationId && (

@@ -27,3 +27,14 @@ export interface ChatState {
     isLoading: boolean;
     input: string;
 }
+
+export interface UserConversation {
+    conversation_id: string;
+    conversation_created_at: string;
+}
+
+export interface ConversationMessage {
+    role: 'user' | 'model';
+    content: string;
+    created_at: string;
+}
