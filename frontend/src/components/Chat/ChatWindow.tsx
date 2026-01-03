@@ -15,6 +15,7 @@ export const ChatWindow: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [lastUpdated, setLastUpdated] = useState(Date.now());
     const userId = localStorage.getItem('user_id') || 'anonymous';
 
     // Initial Welcome Message (Static)
@@ -140,6 +141,9 @@ export const ChatWindow: React.FC = () => {
 
             setMessages(prev => [...prev, newAgentMsg]);
 
+            // Trigger refresh of sidebar since conversation is now saved/updated in DB
+            setLastUpdated(Date.now());
+
         } catch (error) {
             console.error(error);
             const errorMsg: Message = {
@@ -197,6 +201,7 @@ export const ChatWindow: React.FC = () => {
                     onSelectConversation={handleSelectConversation}
                     onNewChat={handleNewChat}
                     currentConversationId={conversationId}
+                    lastUpdated={lastUpdated}
                 />
                 {/* Chat Panel - Full Screen */}
                 <div style={{

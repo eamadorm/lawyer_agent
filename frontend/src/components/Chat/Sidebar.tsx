@@ -8,6 +8,7 @@ interface SidebarProps {
     onSelectConversation: (conversationId: string) => void;
     onNewChat: () => void;
     currentConversationId: string | null;
+    lastUpdated?: number;
 }
 
 const API_BASE_URL = 'http://localhost:8080';
@@ -16,7 +17,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     userId,
     onSelectConversation,
     onNewChat,
-    currentConversationId
+    currentConversationId,
+    lastUpdated
 }) => {
     const [conversations, setConversations] = useState<UserConversation[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         };
 
         fetchConversations();
-    }, [userId, currentConversationId]); // Refresh when conversation changes (e.g. created new one)
+    }, [userId, currentConversationId, lastUpdated]); // Refresh when conversation changes or lastUpdated trigger
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
