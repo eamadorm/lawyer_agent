@@ -171,10 +171,10 @@ class BQConversationsTable(BigQueryTable):
         query = f"""
                 select
                 
-                array_agg(steps ORDER BY prompt_created_at ASC) as full_history
+                array_agg(steps ORDER BY prompt_created_at ASC, internal_step_order ASC) as full_history
 
                 FROM `{self.project_id}.{self.dataset_id}.{self.name}`,
-                UNNEST(agent.steps) steps
+                UNNEST(agent.steps) steps WITH OFFSET as internal_step_order
                 WHERE conversation_id = '{conversation_id}'
 
                 GROUP BY conversation_id
