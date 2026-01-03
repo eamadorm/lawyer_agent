@@ -173,6 +173,30 @@ class ConversationsRequest(BaseModel):
     ]
 
 
+
+class ConversationMessage(BaseModel):
+    """
+    Represents a single message in a conversation history (User or Agent).
+    """
+    role: Annotated[
+        Literal["user", "model"],
+        Field(description="Role of the message sender")
+    ]
+    content: Annotated[
+        str,
+        Field(description="Content of the message"),
+        STRING_NORMALIZER
+    ]
+    created_at: Annotated[
+        datetime,
+        Field(description="Timestamp of the message"),
+        PlainSerializer(
+            lambda dt: dt.strftime(r"%Y-%m-%d %H:%M:%S"),
+            when_used="always"
+        )
+    ]
+
+
 class UserConversation(BaseModel):
     """
     Model representing a conversation summary.

@@ -1,6 +1,6 @@
 from .bq_base_table import BigQueryTable
 from ..config import DBConfig
-from ..schemas import ConversationsRequest, UserConversation
+from ..schemas import ConversationsRequest, UserConversation, ConversationMessage
 from ..bq_utils import query_data, insert_rows_from_json
 from loguru import logger
 from datetime import datetime, timezone
@@ -226,3 +226,47 @@ class BQConversationsTable(BigQueryTable):
         ]
 
         return conversations
+
+    def get_conversation_messages(self, conversation_id: str) -> list[ConversationMessage]:
+        """
+        Retrieves the simplified conversation messages (User/Agent pairs) for UI display.
+        
+        Args:
+            conversation_id (str): Id of the conversation.
+            
+        Returns:
+            list[ConversationMessage]: List of conversation messages sorted by time.
+        """
+        query = f"""
+                select
+                    user.prompt as user_content,
+                    agent.response as agent_content,
+                    prompt_created_at
+            
+                from `{self.project_id}.{self.dataset_id}.{self.name}`
+                where conversation_id = '{conversation_id}'
+                order by prompt_created_at asc
+                """
+
+        row_iterator = query_data(query=query)
+
+        messages = []
+        for row in row_iterator:
+            # Add User Message
+            messages.append(
+                ConversationMessage(
+                    role="user",
+                    content=row.user_content,
+                    created_at=row.prompt_created_at
+                )
+            )
+            # Add Agent Message
+            messages.append(
+                ConversationMessage(
+                    role="model",
+                    content=row.agent_content,
+                    created_at=row.prompt_created_at
+                )
+            )
+
+        return messages

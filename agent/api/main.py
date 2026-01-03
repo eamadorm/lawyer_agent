@@ -24,6 +24,8 @@ from ..database.schemas import (
     CreateUserRequest, 
     UserResponse, 
     LoginRequest,
+    UserConversation,
+    ConversationMessage,
 )
 from ..main import agent 
 from ..config import AgentConfig, ModelArmorConfig
@@ -121,9 +123,52 @@ async def create_conversation_id(request: CreateConversationRequest):
     Returns:
         CreateConversationResponse: The newly generated conversation ID.
     """
-    # Use the conversations table specific ID generation logic to ensure consistency
     conversation_id = conversations_table.generate_conversation_id(request.user_id)
     return CreateConversationResponse(conversation_id=conversation_id)
+
+
+@app.get("/users/{user_id}/conversations", response_model=list[UserConversation])
+async def get_user_conversations(user_id: str):
+    """
+    Retrieves the list of conversations for a specific user.
+    
+    Args:
+        user_id (str): The unique identifier of the user.
+        
+    Returns:
+        list[UserConversation]: A list of conversation summaries.
+    """
+    try:
+        conversations = conversations_table.get_user_conversations(user_id)
+        return conversations
+    except Exception as e:
+        logger.error(f"Error retrieving conversations for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/conversations/{conversation_id}/messages", response_model=list[ConversationMessage])
+async def get_conversation_messages(conversation_id: str):
+    """
+    Retrieves the simplified message history of a conversation for UI display.
+    
+    Args:
+        conversation_id (str): The unique identifier of the conversation.
+        
+    Returns:
+        list[ConversationMessage]: A list of messages (User/Agent).
+    """
+    try:
+        # Check if conversation exists (optional, but good practice)
+        if not conversations_table.conversation_exists(conversation_id):
+            raise HTTPException(status_code=404, detail="Conversation not found")
+            
+        messages = conversations_table.get_conversation_messages(conversation_id)
+        return messages
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving messages for conversation {conversation_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/get_gcs_upload_url", response_model=UploadUrlResponse)
