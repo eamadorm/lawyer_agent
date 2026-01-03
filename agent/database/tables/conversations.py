@@ -97,6 +97,10 @@ class BQConversationsTable(BigQueryTable):
                 f"Error while inserting chat session's data into BigQuery: {e}"
             )
 
+    def generate_conversation_id(self):
+        return self._generate_id()
+
+
     def add_row(self, request: ConversationsRequest) -> str:
         """
         Checks if the request already contains a conversation id.
@@ -114,14 +118,12 @@ class BQConversationsTable(BigQueryTable):
         logger.debug(
             f"Searching for conversation_id {request.conversation_id} in table {self.name}..."
         )
-        # Generating a conversation_id if not provided or not in table
-        if not request.conversation_id or not self.conversation_exists(
-            request.conversation_id
-        ):
+        # Generating a conversation_id if not provided
+        if not request.conversation_id:
             logger.debug(
-                f"Conversation_id {request.conversation_id} not found. Generating new one."
+                f"Conversation_id not found. Generating new one."
             )
-            request.conversation_id = self._generate_id()
+            request.conversation_id = self.generate_conversation_id()
 
         logger.debug(
             f"Generating prompt_id for conversation_id {request.conversation_id}..."
@@ -169,10 +171,10 @@ class BQConversationsTable(BigQueryTable):
         query = f"""
                 select
                 
-                array_agg(steps ORDER BY prompt_created_at ASC) as full_history
+                array_agg(steps ORDER BY prompt_created_at ASC, internal_step_order ASC) as full_history
 
                 FROM `{self.project_id}.{self.dataset_id}.{self.name}`,
-                UNNEST(agent.steps) steps
+                UNNEST(agent.steps) steps WITH OFFSET as internal_step_order
                 WHERE conversation_id = '{conversation_id}'
 
                 GROUP BY conversation_id

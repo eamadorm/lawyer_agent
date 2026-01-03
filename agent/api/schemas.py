@@ -1,14 +1,36 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+from pydantic_ai import DocumentUrl
 from typing import Annotated, Optional, List
 from ..tools.bigquery.schemas import BigQueryExecution
 
-# Input Schema
+
+class UploadUrlRequest(BaseModel):
+    filename: Annotated[str, Field(description="The name of the file to upload.")]
+    content_type: Annotated[str, Field(description="The MIME type of the file.")]
+    user_id: Annotated[str, Field(description="The ID of the user uploading the file.")]
+    conversation_id: Annotated[str, Field(description="The ID of the conversation.")]
+
+
+class Document(BaseModel):
+    gcs_uri: Annotated[str, Field(description="The GCS URI of the document.")]
+
+
 class ChatRequest(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
     message: Annotated[str, Field(description="The user's message to the agent.")]
     user_id: Annotated[str, Field(description="The unique identifier for the user.")]
     conversation_id: Annotated[Optional[str], Field(description="The unique identifier for the conversation. If not provided, a new one will be generated.")] = None
+    documents: Annotated[List[Document], Field(default = list(), description="List of documents associated with the message.")]
 
-# Output Schemas
+
+class UploadUrlResponse(BaseModel):
+    upload_url: Annotated[str, Field(description="The signed URL for direct upload.")]
+    gcs_uri: Annotated[str, Field(description="The final GCS URI of the uploaded file.")]
+
+class CreateConversationResponse(BaseModel):
+    conversation_id: Annotated[str, Field(description="The unique identifier for the new conversation.")]
+
 class ChatResponse(BaseModel):
     response: Annotated[str, Field(description="The text response from the agent.")]
     conversation_id: Annotated[str, Field(description="The unique identifier for the conversation.")]

@@ -3,11 +3,27 @@ from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from pydantic_core import to_jsonable_python
+from pydantic_ai import DocumentUrl
+import mimetypes
 
-from .schemas import ChatRequest, ChatResponse, HealthResponse
+from .schemas import (
+    ChatRequest, 
+    ChatResponse, 
+    HealthResponse, 
+    UploadUrlRequest, 
+    UploadUrlResponse,
+    CreateConversationResponse,
+)
 from ..database.tables.conversations import BQConversationsTable
 from ..database.tables.users import BQUsersTable
-from ..database.schemas import ConversationsRequest, UserRecord, AgentRecord, CreateUserRequest, UserResponse, LoginRequest
+from ..database.schemas import (
+    ConversationsRequest, 
+    UserRecord, 
+    AgentRecord, 
+    CreateUserRequest, 
+    UserResponse, 
+    LoginRequest,
+)
 from ..main import agent 
 from ..config import AgentConfig, ModelArmorConfig
 from ..security import ModelArmorGuard
@@ -15,6 +31,8 @@ from .auxiliars import (
     extract_query_results,
     prepare_to_read_chat_history,
 )
+from .gcs_utils import generate_upload_url
+
 
 app = FastAPI(
     title="Lawyer Agent API",
@@ -91,6 +109,68 @@ async def login(request: LoginRequest, response: Response):
     return result
 
 
+@app.post("/create_conversation_id", response_model=CreateConversationResponse)
+async def create_conversation_id():
+    """
+    Endpoint to generate a new conversation ID.
+
+    Returns:
+        CreateConversationResponse: The newly generated conversation ID.
+    """
+    # Use the conversations table specific ID generation logic to ensure consistency
+    conversation_id = conversations_table.generate_conversation_id()
+    return CreateConversationResponse(conversation_id=conversation_id)
+
+
+@app.post("/get_gcs_upload_url", response_model=UploadUrlResponse)
+async def get_gcs_upload_url(request: UploadUrlRequest):
+    """
+    Generates a Signed URL for direct file upload to GCS.
+
+    Args:
+        request (UploadUrlRequest): The request containing user_id, conversation_id, and filename.
+
+    Returns:
+        UploadUrlResponse: The response containing the generated upload URL and GCS URI.
+    """
+    BUCKET_NAME = "lawyer_agent"
+    # Path structure: user_documents/<user_id>/<conversation_id>/<filename>
+    blob_name = f"user_documents/{request.user_id}/{request.conversation_id}/{request.filename}"
+
+    # Security: Validate file extension
+    ALLOWED_EXTENSIONS = {
+        # Documents (Vertex AI supported)
+        '.pdf', '.txt', '.md', '.html', '.json',
+        # Images
+        '.jpg', '.jpeg', '.png', '.webp', '.svg',
+        # Video/Audio
+        '.mp4', '.mp3', '.wav', '.mov', '.avi'
+    }
+    
+    ext = "." + request.filename.split(".")[-1].lower() if "." in request.filename else ""
+    if ext not in ALLOWED_EXTENSIONS:
+        logger.warning(f"Blocked upload attempt for disallowed file type: {request.filename}")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"File type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+
+    try:
+        url = generate_upload_url(
+            blob_name=blob_name,
+            bucket_name=BUCKET_NAME,
+            content_type=request.content_type
+        )
+        
+        return UploadUrlResponse(
+            upload_url=url,
+            gcs_uri=f"gs://{BUCKET_NAME}/{blob_name}"
+        )
+    except Exception as e:
+        logger.error(f"Error generating signed URL: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
@@ -126,16 +206,32 @@ async def chat(request: ChatRequest):
         )
 
     try:
-        # 3. Run Agent
-        logger.info(f"Running agent for conversation ID: {conversation_id}")
-        result = await agent.run(request.message, message_history=chat_history_formatted)
+        # 3. Construct Agent Input (Text + Documents)
+        agent_input = [request.message, ]
+        
+        if request.documents:
+            logger.info(f"Attaching {len(request.documents)} documents to the prompt.")
+            for doc in request.documents:
+                # Use pydantic_ai.DocumentUrl as requested
+                media_type, _ = mimetypes.guess_type(doc.gcs_uri)
+                if media_type:
+                    logger.debug(f"Attaching document with media_type: {media_type}")
+                    agent_input.append(DocumentUrl(url=doc.gcs_uri, media_type=media_type))
+                else:
+                    logger.warning(f"Could not determine media_type for {doc.gcs_uri}, sending without it.")
+                    agent_input.append(DocumentUrl(url=doc.gcs_uri))
 
-        # 4. Extract Results
+        # 4. Run Agent
+        logger.info(f"Running agent for conversation ID: {conversation_id}")
+        # agent.run accepts a list of content parts for multimodal input
+        result = await agent.run(agent_input, message_history=chat_history_formatted)
+
+        # 5. Extract Results
         queries_executed = extract_query_results(result)
         
         raw_response = result.output
         
-        # 5. Security Check (Output)
+        # 6. Security Check (Output)
         safe_response = security_guard.sanitize_response(raw_response)
 
         # 6. Save to Database
